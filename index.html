@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penang KOL shoots</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F3F1; --surface:#FFFFFF; --surface-2:#F8F8F6; --ink:#1E1C1A; --ink-2:#5E5A55; --ink-3:#8F8A84;
+  --line:#E4E2DE; --line-strong:#CFCCC6;
+  --red:#D3202F; --red-ink:#FFFFFF; --red-soft:#FCE8E9;
+  --green:#21804B; --green-soft:#E3F3EA;
+  --amber:#B77A00; --amber-soft:#FBF1DC;
+  --grey:#77726C; --grey-soft:#ECEAE7;
+  --xhs:#FF2442; --ig:#C1358A; --tt:#1E1C1A;
+  --focus:#2563EB;
+  --font-d:"Bricolage Grotesque", "Figtree", system-ui, "PingFang SC","Noto Sans SC","Microsoft YaHei", sans-serif;
+  --font-b:"Figtree", system-ui, -apple-system, "Segoe UI", "PingFang SC","Noto Sans SC","Microsoft YaHei", sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#161514; --surface:#1F1E1C; --surface-2:#252321; --ink:#F1EFEC; --ink-2:#B7B2AB; --ink-3:#86817A;
+  --line:#33302D; --line-strong:#47433F;
+  --red:#F04452; --red-soft:#3A1D20; --green:#4CC17E; --green-soft:#16301F; --amber:#E2AA3A; --amber-soft:#3A2D12;
+  --grey:#A39E97; --grey-soft:#2C2A27; --tt:#F1EFEC; --focus:#6EA0FF;
+}}
+:root[data-theme="dark"]{
+  --bg:#161514; --surface:#1F1E1C; --surface-2:#252321; --ink:#F1EFEC; --ink-2:#B7B2AB; --ink-3:#86817A;
+  --line:#33302D; --line-strong:#47433F;
+  --red:#F04452; --red-soft:#3A1D20; --green:#4CC17E; --green-soft:#16301F; --amber:#E2AA3A; --amber-soft:#3A2D12;
+  --grey:#A39E97; --grey-soft:#2C2A27; --tt:#F1EFEC; --focus:#6EA0FF;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--font-b);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1500px;margin:0 auto;padding:28px 20px 80px}
+
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-family:var(--font-d);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1.05;letter-spacing:-.02em;margin:0}
+.sub{color:var(--ink-2);margin:6px 0 0}
+.save-state{font-size:13px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.save-state .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.save-state.busy .dot{background:var(--amber)}
+.save-state.err .dot{background:var(--red)}
+
+/* Day strip */
+.days{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px 14px;scrollbar-width:thin;scroll-snap-type:x proximity}
+.day{flex:0 0 auto;min-width:118px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;scroll-snap-align:start}
+.day:hover{border-color:var(--line-strong)}
+.day[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.day .wd{font-size:12.5px;color:var(--ink-2);font-weight:600}
+.day .dt{font-family:var(--font-d);font-weight:700;font-size:22px;line-height:1.1;margin-top:2px;letter-spacing:-.01em}
+.day .ct{font-size:12.5px;color:var(--ink-3);margin-top:4px}
+.day.today .wd::after{content:"Today";margin-left:6px;background:var(--red);color:var(--red-ink);font-size:10.5px;padding:1px 6px;border-radius:99px;vertical-align:1px}
+.bar{display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--grey-soft);margin-top:9px}
+.bar span{display:block;height:100%}
+.bar .a{background:var(--green)} .bar .p{background:var(--amber)} .bar .c{background:var(--line-strong)}
+
+/* Stats */
+.stats{display:flex;flex-wrap:wrap;gap:8px 26px;margin:4px 0 18px;padding:14px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.stats.beef{margin-top:-10px;align-items:baseline}
+.beefnote{font-weight:600;font-size:13.5px;margin-right:4px}
+.stat{display:flex;align-items:baseline;gap:7px}
+.stat b{font-family:var(--font-d);font-size:24px;font-weight:700;letter-spacing:-.01em}
+.stat span{color:var(--ink-2);font-size:13.5px}
+.stat.g b{color:var(--green)} .stat.y b{color:var(--amber)} .stat.r b{color:var(--grey)}
+
+/* Toolbar */
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.search{flex:1 1 220px;max-width:340px;position:relative}
+.search input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-strong);background:var(--surface);border-radius:99px;padding:6px 12px;font-size:13.5px;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.sel{padding:7px 10px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface);font-size:13.5px}
+.spacer{flex:1}
+.btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Table (desktop) */
+.tablebox{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto;position:relative}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:1540px;table-layout:fixed}
+thead th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-size:12.5px;font-weight:600;color:var(--ink-2);padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:2}
+tbody td{padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:middle;background:var(--surface)}
+tbody tr.krow:hover td{background:var(--surface-2)}
+.s1,.s2,.s3{position:sticky;z-index:1}
+.s1{left:0} .s2{left:108px} .s3{left:240px;box-shadow:1px 0 0 var(--line)}
+thead .s1,thead .s2,thead .s3{z-index:3}
+tr.group td{background:var(--surface-2);padding:9px 14px;border-bottom:1px solid var(--line);font-weight:600;font-size:13.5px}
+tr.group .gwrap{position:sticky;left:14px;display:inline-flex;gap:10px;align-items:baseline}
+tr.group .gd{font-family:var(--font-d);font-size:16px;font-weight:700}
+tr.group .gc{color:var(--ink-3);font-weight:500}
+tr.is-cancelled .cell, tr.is-cancelled .uname{color:var(--ink-3)}
+tr.is-cancelled .uname{text-decoration:line-through}
+tr.flash td{animation:flash 1.4s ease-out}
+@keyframes flash{0%{background:var(--amber-soft)}100%{background:var(--surface)}}
+.cell{width:100%;border:1px solid transparent;background:transparent;border-radius:7px;padding:6px 7px;min-width:0}
+.cell:hover{border-color:var(--line)}
+.cell:focus{border-color:var(--focus);background:var(--surface);outline:none}
+.cell::placeholder{color:var(--ink-3);opacity:.7}
+.uname{font-weight:600}
+.timein{font-weight:600;font-variant-numeric:tabular-nums}
+.platwrap{display:flex;align-items:center;gap:2px}
+.pdot{flex:0 0 8px;height:8px;border-radius:50%;background:var(--line-strong);margin-left:6px}
+.pdot.xhs{background:var(--xhs)} .pdot.ig{background:var(--ig)} .pdot.tt{background:var(--tt)}
+select.status{appearance:none;-webkit-appearance:none;border:0;border-radius:99px;padding:5px 26px 5px 11px;font-size:13px;font-weight:600;cursor:pointer;background-repeat:no-repeat;background-position:right 9px center;background-size:9px;max-width:100%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.6'/%3E%3C/svg%3E")}
+select.status.s-arrived{background-color:var(--green-soft);color:var(--green)}
+select.status.s-pending{background-color:var(--amber-soft);color:var(--amber)}
+select.status.s-cancelled{background-color:var(--grey-soft);color:var(--grey)}
+select.small{border:1px solid transparent;background:transparent;border-radius:7px;padding:6px 4px;cursor:pointer;width:100%}
+select.small:hover{border-color:var(--line)}
+.datebtn{width:100%;text-align:left;border:1px solid transparent;background:transparent;border-radius:7px;padding:6px 7px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.datebtn:hover{border-color:var(--line)}
+.datebtn svg{color:var(--ink-3);flex:0 0 auto}
+.datebtn.empty{color:var(--ink-3)}
+.linkcell{display:flex;align-items:center;gap:2px}
+.linkcell .cell{font-size:13px;color:var(--ink-2);text-overflow:ellipsis}
+.ib{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;display:inline-grid;place-items:center;cursor:pointer;color:var(--ink-2);text-decoration:none}
+.ib:hover{background:var(--grey-soft);color:var(--ink)}
+.ib[aria-disabled="true"]{opacity:.3;pointer-events:none}
+.ib.copied{color:var(--green)}
+.ib.del:hover{color:var(--red);background:var(--red-soft)}
+.ib.confirm{width:auto;padding:0 9px;color:#fff;background:var(--red);font-size:12.5px;font-weight:700}
+.postcell .cell.has{color:var(--green);font-weight:500}
+.chk{width:18px;height:18px;accent-color:var(--green);cursor:pointer;display:block;margin:0 auto}
+.c-center{text-align:center}
+td.c-sum{display:none}
+.empty{padding:48px 20px;text-align:center;color:var(--ink-2)}
+.empty b{display:block;font-family:var(--font-d);font-size:20px;color:var(--ink);margin-bottom:4px}
+.notice{padding:14px 18px;background:var(--amber-soft);color:var(--ink);border-radius:12px;margin-bottom:14px;display:none}
+.notice.show{display:block}
+.foot{color:var(--ink-3);font-size:12.5px;margin-top:12px}
+
+/* Calendar popover */
+.cal{position:fixed;z-index:30;background:var(--surface);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:12px;width:292px;display:none}
+.cal.open{display:block}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-h b{font-family:var(--font-d);font-size:17px}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-g .wdh{font-size:11.5px;color:var(--ink-3);text-align:center;padding:4px 0;font-weight:600}
+.cal-g button{aspect-ratio:1;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:14px;position:relative;font-variant-numeric:tabular-nums}
+.cal-g button:hover{background:var(--grey-soft)}
+.cal-g button.out{color:var(--ink-3)}
+.cal-g button.today{box-shadow:inset 0 0 0 1.5px var(--red)}
+.cal-g button.sel{background:var(--ink);color:var(--bg);font-weight:700}
+.cal-g button.has::after{content:"";position:absolute;bottom:4px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--red)}
+.cal-g button.sel.has::after{background:var(--bg)}
+.cal-f{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12.5px;color:var(--ink-3)}
+.scrim{position:fixed;inset:0;z-index:29;display:none;background:rgba(0,0,0,.28)}
+
+.dock{display:none}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);padding:11px 14px 11px 16px;border-radius:12px;font-size:14px;display:flex;gap:14px;align-items:center;transition:.2s;z-index:40;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:none;border:0;color:var(--bg);font-weight:700;text-decoration:underline;cursor:pointer;padding:2px 4px;white-space:nowrap}
+
+/* ---------- Mobile: card layout ---------- */
+@media (max-width:760px){
+  .wrap{padding:16px 12px calc(var(--dock-h,170px) + 24px)}
+  nav.days{display:none}
+  .dock{display:block;position:fixed;left:0;right:0;bottom:0;z-index:26;background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -8px 28px rgba(0,0,0,.10);padding:0 0 calc(10px + env(safe-area-inset-bottom,0px))}
+  .dock-handle{display:flex;justify-content:center;width:100%;border:0;background:transparent;padding:6px 0 2px;color:var(--ink-3);cursor:pointer}
+  .dock-handle svg{transition:transform .2s}
+  .dock.min .dock-handle svg{transform:rotate(180deg)}
+  .dock-days{display:flex;gap:6px;overflow-x:auto;padding:2px 12px 10px;scrollbar-width:none;scroll-snap-type:x proximity;scroll-padding-inline:12px}
+  .dock-days::-webkit-scrollbar{display:none}
+  .dchip{flex:0 0 auto;min-width:64px;border:0;background:transparent;border-radius:14px;padding:7px 10px;text-align:center;cursor:pointer;color:var(--ink-2);scroll-snap-align:start;position:relative}
+  .dchip .w{display:block;font-size:12px;font-weight:600}
+  .dchip .d{display:block;font-family:var(--font-d);font-size:17px;font-weight:700;line-height:1.15;color:var(--ink)}
+  .dchip .n{display:block;font-size:11px;color:var(--ink-3);margin-top:1px}
+  .dchip[aria-pressed="true"]{background:var(--red-soft)}
+  .dchip[aria-pressed="true"] .d,.dchip[aria-pressed="true"] .w{color:var(--red)}
+  .dchip.today .w::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-left:4px;vertical-align:1px}
+  .dock-sum{display:flex;align-items:flex-end;gap:12px;border-top:1px solid var(--line);margin:0 14px;padding-top:10px}
+  .dock.min .dock-sum{display:none}
+  .dsum{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,minmax(0,auto));gap:2px 16px;justify-content:start}
+  .dsum .k,.dsum .v{display:block}
+  .dsum .k{font-size:10.5px;color:var(--ink-3);font-weight:600;letter-spacing:.01em}
+  .dsum .v{font-family:var(--font-d);font-size:20px;font-weight:700;line-height:1.1}
+  .dsum .v.g{color:var(--green)} .dsum .v.y{color:var(--amber)}
+  .dsum .full{grid-column:1/-1;font-size:12px;color:var(--ink-2);margin-top:3px}
+  .dsum .full b{font-weight:700}
+  .dock-add{flex:0 0 auto;border:0;background:var(--red);color:#fff;border-radius:14px;width:48px;height:48px;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 12px rgba(211,32,47,.3)}
+  .dock-add:disabled{opacity:.45}
+  #addBtn{display:none}
+  .toast{bottom:calc(var(--dock-h,170px) + 12px)}
+  header.top{margin-bottom:16px}
+  .day{min-width:104px;padding:10px 12px}
+  .day .dt{font-size:19px}
+  .stats{gap:6px 16px;padding:12px 14px;margin-bottom:14px}
+  .stats.beef{margin-top:-6px}
+  .beefnote{flex-basis:100%}
+  .stat b{font-size:20px}
+  .tools{gap:8px}
+  .search{max-width:none;flex-basis:100%}
+  .chips{flex-wrap:nowrap;overflow-x:auto;flex-basis:100%;padding-bottom:2px;scrollbar-width:none}
+  .spacer{display:none}
+  .sel{flex:1}
+  #exportBtn{flex:1}
+  input.cell, .search input, select, .sel{font-size:16px}
+  .tablebox{background:transparent;border:0;overflow:visible}
+  table,tbody{display:block;min-width:0;width:100%}
+  thead{display:none}
+  tbody tr.krow{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"sum stat";align-items:center;gap:2px 8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 8px 4px 4px;margin-bottom:6px}
+  tbody tr.krow td{display:block;padding:0;border:0;background:transparent;position:static;box-shadow:none;min-width:0}
+  tbody tr.krow > td:not(.c-sum):not(.c-stat){display:none}
+  tbody tr.krow.open{grid-template-columns:repeat(4,minmax(0,1fr));padding:4px 10px 10px 4px;border-color:var(--ink-3);margin:10px 0 12px;
+    grid-template-areas:"sum sum sum sum" "time time stat stat" "user user user user" "date date pax pax" "plat plat tabl tabl" "conf conf beef beef" "prof prof prof prof" "post post post post" "note note note del"}
+  tbody tr.krow.open > td:not(.c-sum):not(.c-stat){display:block}
+  tbody tr.krow.open > td.c-conf:not(.c-sum):not(.c-stat){display:flex}
+  tbody tr.krow.open > td.c-stat{align-self:end;padding-bottom:4px}
+  td.c-sum{display:block !important;grid-area:sum}
+  td.c-del{align-self:end}
+  tbody tr.krow:hover td{background:transparent}
+  td.c-time{grid-area:time} td.c-stat{grid-area:stat;align-self:center} td.c-del{grid-area:del;justify-self:end}
+  td.c-user{grid-area:user} td.c-date{grid-area:date} td.c-pax{grid-area:pax} td.c-plat{grid-area:plat} td.c-tabl{grid-area:tabl}
+  td.c-conf{grid-area:conf} td.c-beef{grid-area:beef} td.c-prof{grid-area:prof} td.c-post{grid-area:post} td.c-note{grid-area:note}
+  tbody tr.krow td[data-label]::before{content:attr(data-label);display:block;font-size:11.5px;color:var(--ink-3);font-weight:600;padding:6px 8px 0}
+  td.c-conf{flex-direction:column;text-align:left}
+  td.c-conf .chk{margin:9px 8px 6px;width:22px;height:22px}
+  .sumbtn{display:flex;align-items:center;gap:6px;width:100%;text-align:left;background:transparent;border:0;padding:7px 4px 7px 8px;cursor:pointer;border-radius:9px;min-height:50px}
+  .sumbtn .sm{flex:1;min-width:0}
+  .sumbtn .l1{display:flex;gap:9px;align-items:baseline;min-width:0}
+  .sumbtn .st{font-family:var(--font-d);font-weight:700;font-size:15px;flex:0 0 auto;font-variant-numeric:tabular-nums;min-width:54px}
+  .sumbtn .sn{font-weight:700;font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sumbtn .l2{display:flex;gap:9px;flex-wrap:nowrap;overflow:hidden;white-space:nowrap;align-items:center;font-size:12.5px;color:var(--ink-2);margin-top:1px;padding-left:63px;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .sumbtn .l2 .pdot{margin:0 4px 0 0;display:inline-block;flex:0 0 7px;width:7px;height:7px}
+  .sumbtn .tag{display:inline-flex;align-items:center}
+  .sumbtn .ok{color:var(--green);font-weight:600}
+  .sumbtn .warn{color:var(--amber);font-weight:600}
+  .sumbtn .chev{display:none}
+  tr.krow.open .sumbtn .chev{display:block;flex:0 0 auto;color:var(--ink-3)}
+  tr.krow.open .sumbtn .chev{transform:rotate(180deg)}
+  .sumbtn .tag{flex:0 0 auto}
+  tr.is-cancelled .sumbtn .sn{text-decoration:line-through;color:var(--ink-3)}
+  tr.is-cancelled .sumbtn .st{color:var(--ink-3)}
+  td.c-stat select.status{font-size:12.5px;padding:5px 20px 5px 9px;background-position:right 7px center;background-size:8px}
+  .cell{border-color:transparent;background:transparent}
+  td[data-label] .cell, td[data-label] .datebtn, td[data-label] select.small{background:var(--surface-2);border-radius:9px;padding:8px}
+  .ib{width:38px;height:38px}
+  tr.group{display:block;margin:16px 2px 6px}
+  tr.group td{display:block;background:transparent;border:0;padding:0}
+  tr.group .gwrap{position:static}
+  tr.group .gd{font-size:20px}
+  tr.flash{animation:flashc 1.4s ease-out}
+  tr.flash td{animation:none}
+  @keyframes flashc{0%{box-shadow:0 0 0 3px var(--amber)}100%{box-shadow:0 0 0 0 transparent}}
+  .cal{left:0 !important;right:0;bottom:0;top:auto !important;width:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+  .cal-g button{font-size:16px}
+  .scrim.open{display:block}
+  .foot{display:none}
+}
+@media (prefers-reduced-motion:reduce){ .toast{transition:none} tr.flash td, tr.flash{animation:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Penang KOL shoots</h1>
+      <p class="sub">US Pizza · who's booked, who came, and where they posted</p>
+    </div>
+    <div class="save-state" id="saveState" aria-live="polite"><span class="dot"></span><span id="saveText">Connecting…</span></div>
+  </header>
+
+  <div class="notice" id="notice"></div>
+
+  <nav class="days" id="days" aria-label="Shoot days"></nav>
+
+  <section class="stats" id="stats" aria-label="Summary"></section>
+  <section class="stats beef" id="beefStats" aria-label="Beef summary"></section>
+
+  <div class="tools">
+    <label class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search username, notes, table…" aria-label="Search">
+    </label>
+    <div class="chips" id="statusChips" role="group" aria-label="Filter by status"></div>
+    <select class="sel" id="platFilter" aria-label="Filter by platform"><option value="">All platforms</option></select>
+    <span class="spacer"></span>
+    <button class="btn" id="exportBtn" type="button" hidden>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export Excel</button>
+    <button class="btn primary" id="addBtn" type="button" disabled>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add KOL</button>
+  </div>
+
+  <div class="tablebox">
+    <table>
+      <colgroup>
+        <col style="width:108px"><col style="width:132px"><col style="width:190px"><col style="width:132px"><col style="width:130px"><col style="width:140px">
+        <col style="width:230px"><col style="width:84px"><col style="width:70px"><col style="width:84px"><col style="width:250px"><col style="width:190px"><col style="width:56px">
+      </colgroup>
+      <thead><tr>
+        <th class="s1">Time</th>
+        <th class="s2">Came?</th>
+        <th class="s3">Username</th>
+        <th>Shoot date</th>
+        <th>Pax</th>
+        <th>Platform</th>
+        <th>Profile link</th>
+        <th class="c-center">Confirmed</th>
+        <th>Table</th>
+        <th>Beef?</th>
+        <th>Posting link</th>
+        <th>Notes</th>
+        <th><span class="sr">Delete</span></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden></div>
+  </div>
+  <p class="foot">Every cell is editable — click and type. Changes save when you leave the cell and are kept in this browser on this device.</p>
+</div>
+
+<datalist id="platList"><option value="XHS"><option value="Instagram"><option value="TikTok"><option value="Facebook"><option value="YouTube"></datalist>
+
+<div class="scrim" id="scrim"></div>
+<div class="cal" id="cal" role="dialog" aria-label="Choose shoot date">
+  <div class="cal-h">
+    <button class="ib" type="button" id="calPrev" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <b id="calTitle"></b>
+    <button class="ib" type="button" id="calNext" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+  <div class="cal-g" id="calGrid"></div>
+  <div class="cal-f"><span>Red dot = days with shoots</span><button class="btn" type="button" id="calClose" style="padding:5px 10px;font-size:13px">Close</button></div>
+</div>
+
+<div class="dock" id="dock" aria-label="Quick day switcher">
+  <button class="dock-handle" id="dockToggle" type="button" aria-expanded="true" aria-label="Hide day summary"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+  <div class="dock-days" id="dockDays" role="group" aria-label="Shoot days"></div>
+  <div class="dock-sum">
+    <div class="dsum" id="dockSum"></div>
+    <button class="dock-add" id="dockAdd" type="button" aria-label="Add KOL" disabled><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"><span id="toastMsg"></span><button id="toastBtn" type="button" hidden>Undo</button></div>
+
+<script>
+/* Standalone mode: data is embedded below and edits are saved in this browser (localStorage). */
+(function(){
+  if(window.claude && window.claude.use) return;
+  const KEY="penangKolDashboard_v1";
+  const SEED={"k001": {"beef": "no", "confirmed": true, "createdAt": 1791000000001, "date": "2026-10-07", "notes": "Rescheduled from 5 Oct (KOL sick)", "pax": "3pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/doyonosfotros?stkn=MXV0cDVxaWx3emxyaw==", "status": "arrived", "table": "", "time": "11:30am", "updatedAt": 1791100000000, "username": "doyonofotros"}, "k002": {"beef": "no", "confirmed": true, "createdAt": 1791000000002, "date": "2026-10-05", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "https://www.instagram.com/reel/DeI_FRqJ7-P/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==", "profileLink": "https://www.instagram.com/fooddiary_0819?stkn=MTRzcnpvM2J4dm5nMQ==", "status": "arrived", "table": "", "time": "11am", "updatedAt": 1791100000000, "username": "fooddiary_0819"}, "k003": {"beef": "no", "confirmed": false, "createdAt": 1791000000003, "date": "2026-10-05", "notes": "from momo", "pax": "", "platform": "XHS", "postLink": "", "profileLink": "https://www.rednote.com/user/profile/5e3c18ef000000000100043a?xsec_token=ABr4Ovn7j60_dx3paPtG-d_JkZPyp7NtvJHdUteIO1DtI%3D&xsec_source=pc_search", "status": "arrived", "table": "", "time": "11.30pm", "username": "花花绿绿"}, "k004": {"beef": "no", "confirmed": false, "createdAt": 1791000000004, "date": "2026-10-05", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5a93ffbce8ac2b0ad3b0dbed?xsec_token=ABRCevlySVZV9S1q965LAjemteMa-AmkJiYyQYIkW-vWM%3D&xsec_source=pc_search", "status": "arrived", "table": "", "time": "12 pm", "username": "浅浅微笑chloe"}, "k005": {"beef": "no", "confirmed": false, "createdAt": 1791000000005, "date": "2026-10-05", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "https://www.instagram.com/reel/DeG8kuUI7BT/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==", "profileLink": "https://www.instagram.com/penanghungryfoodie/?hl=en", "status": "arrived", "table": "", "time": "12.30pm", "updatedAt": 1791100000000, "username": "Cindy teoh"}, "k006": {"beef": "no", "confirmed": true, "createdAt": 1791000000006, "date": "2026-10-05", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "https://xhslink.cn/o/2rGc8aepAD", "profileLink": "https://xhslink.cn/o/4vY4IOAKZ9n", "status": "arrived", "table": "", "time": "12pm", "username": "晶瑆✨🌟"}, "k007": {"beef": "yes", "confirmed": true, "createdAt": 1791000000007, "date": "2026-10-05", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/next_station0105?stkn=ODRibDlueWd0d3Ro", "status": "arrived", "table": "", "time": "12pm", "username": "next_station0105"}, "k008": {"beef": "no", "confirmed": true, "createdAt": 1791000000008, "date": "2026-10-05", "notes": "", "pax": "3pax", "platform": "Instagram", "postLink": "https://www.instagram.com/reel/DeJ30dRJaEr/?stkn=MWJpcmNsdGQ1ODdxbQ==", "profileLink": "https://www.instagram.com/yingyinnn?stkn=bnZrdWE1bXYwbmZm", "status": "arrived", "table": "", "time": "2pm", "updatedAt": 1791100000000, "username": "yingyinnn"}, "k009": {"beef": "yes", "confirmed": false, "createdAt": 1791000000009, "date": "2026-10-05", "notes": "from momo", "pax": "", "platform": "XHS", "postLink": "", "profileLink": "https://www.rednote.com/user/profile/5b8005c8f7e8b93553a83351?xsec_token=ABUV2lpGdSluAl9T_ET3UtzVB-7uKyQ8dSEYj3ifZiVDc%3D&xsec_source=pc_search", "status": "arrived", "table": "", "time": "1pm", "username": "人间可爱精"}, "k010": {"beef": "yes", "confirmed": false, "createdAt": 1791000000010, "date": "2026-10-05", "notes": "", "pax": "2pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.rednote.com/user/profile/5e686dc00000000001002016?xsec_token=ABn5cn_D0cmRUwefA7fsFtxmxP89BNncDUl6_hgJuWMbk%3D&xsec_source=pc_search", "status": "arrived", "table": "", "time": "5pm", "username": "小菜鸟欧巴"}, "k011": {"beef": "yes", "confirmed": true, "createdAt": 1791000000011, "date": "2026-10-05", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "https://www.instagram.com/reel/DeL6thfsEQZ/?stkn=MXd1b3BxbWluMjJ1YQ==", "profileLink": "https://www.instagram.com/nilamhimawari?stkn=NXBtbndiN2tvNXV4", "status": "arrived", "table": "", "time": "5pm", "updatedAt": 1791200000000, "username": "nilamhimawari"}, "k012": {"beef": "yes", "confirmed": true, "createdAt": 1791000000012, "date": "2026-10-05", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5d3440c4000000001003ddaa?xsec_token=ABjPpSh3PlgQvyqUFDJQZiVvVPs-S-GF6TFPeCNBUGDo0%3D&xsec_source=pc_search", "status": "arrived", "table": "", "time": "6pm", "username": "Many fish 🐟 多鱼"}, "k013": {"beef": "no", "confirmed": true, "createdAt": 1791000000013, "date": "2026-10-05", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/penanglabo?stkn=MWczYWp1aTh4Y2E3cg==", "status": "arrived", "table": "", "time": "6pm", "username": "penanglabo"}, "k014": {"beef": "", "confirmed": true, "createdAt": 1791000000014, "date": "2026-10-05", "notes": "", "pax": "3pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@anxietylittle?_r=1&_t=ZS-99zZ9naJdwb", "status": "pending", "table": "", "time": "6pm", "username": "anxietylittle"}, "k015": {"beef": "yes", "confirmed": true, "createdAt": 1791000000015, "date": "2026-10-05", "notes": "", "pax": "2 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/angeliclicc?stkn=MXI5cnNseHJjeXVjbQ==", "status": "arrived", "table": "", "time": "6.45pm", "username": "angeliclicc"}, "k016": {"beef": "no", "confirmed": true, "createdAt": 1791000000016, "date": "2026-10-05", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/cy_cheaying?stkn=eXB4eWQxeHg4aHN5", "status": "arrived", "table": "", "time": "7pm", "username": "cy_cheaying"}, "k017": {"beef": "no", "confirmed": true, "createdAt": 1791000000017, "date": "2026-10-05", "notes": "", "pax": "4 pax (2 kids)", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jaec.nofilter.justlife?stkn=azI3aXl1MDIxejU5", "status": "arrived", "table": "", "time": "7pm", "username": "jaec.nofilter.justlife"}, "k018": {"beef": "no", "confirmed": true, "createdAt": 1791000000018, "date": "2026-10-05", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/alice_taurus83?stkn=OXZrYnhudXdpcWl6", "status": "arrived", "table": "", "time": "7pm", "username": "alice_taurus83"}, "k019": {"beef": "no", "confirmed": true, "createdAt": 1791000000019, "date": "2026-10-05", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/6l4FuPSqZjn", "status": "arrived", "table": "", "time": "730pm", "username": "一个爱吃的嘴"}, "k020": {"beef": "no", "confirmed": false, "createdAt": 1791000000020, "date": "2026-10-05", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.com/m/hpbwCs4ktP", "status": "arrived", "table": "", "time": "8pm", "username": "Momo"}, "k021": {"beef": "yes", "confirmed": true, "createdAt": 1791000000021, "date": "2026-10-05", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "http://xhslink.cn/o/Axy4IoUqm7R", "status": "arrived", "table": "", "time": "8pm", "username": "斯溜斯溜"}, "k022": {"beef": "yes", "confirmed": true, "createdAt": 1791000000022, "date": "2026-10-05", "notes": "", "pax": "3-4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/2uqRLxb4APK", "status": "arrived", "table": "", "time": "8pm", "username": "黑天鹅眼皮痛"}, "k023": {"beef": "yes", "confirmed": true, "createdAt": 1791000000023, "date": "2026-10-05", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/cik_lawyer?stkn=bDgzbW9oNXZjMHJx", "status": "arrived", "table": "", "time": "8 pm", "username": "cik_lawyer"}, "k024": {"beef": "", "confirmed": true, "createdAt": 1791000000024, "date": "2026-10-05", "notes": "Meeting", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5ce3f760000000001002a387?xsec_token=ABmLFpl71JXLKIn6yEZfFeao-P7hfqZDkkFAgQBEG-bsU%3D&xsec_source=pc_search", "status": "cancelled", "table": "", "time": "7pm", "username": "猫猫的生活"}, "k025": {"beef": "no", "confirmed": true, "createdAt": 1791000000025, "date": "2026-10-05", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "", "status": "arrived", "table": "", "time": "7pm", "username": "_yukiyura_"}, "k026": {"beef": "no", "confirmed": true, "createdAt": 1791000000026, "date": "2026-10-05", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5eb2670500000000010031e0?channel_type=msg_chat_page&xsec_token=ABLSh3zmu7xIQAeIYzQVVACEEUxBMF9WAPAXM_Veq8FyM%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "", "username": "小粉沒有名字"}, "k027": {"beef": "yes", "confirmed": true, "createdAt": 1791000000027, "date": "2026-10-06", "notes": "", "pax": "4pax", "platform": "Instagram", "postLink": "https://www.instagram.com/reel/DeLmTShhBEb/?stkn=MTA2MjY2azVhNTVuag==", "profileLink": "https://www.instagram.com/rachel.eatssss?stkn=aG1ydW9rbHBxb2tl", "status": "arrived", "table": "", "time": "11am", "updatedAt": 1791200000000, "username": "rachel.eatssss"}, "k028": {"beef": "no", "confirmed": false, "createdAt": 1791000000028, "date": "2026-10-06", "notes": "Drinks no sugar", "pax": "2-3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/m/5qxO1BI4jjI", "status": "arrived", "table": "", "time": "11:20am", "username": "贝果脑袋"}, "k029": {"beef": "no", "confirmed": false, "createdAt": 1791000000029, "date": "2026-10-06", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "arrived", "table": "", "time": "12pm", "username": "安安"}, "k030": {"beef": "no", "confirmed": true, "createdAt": 1791000000030, "date": "2026-10-06", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jowiepeace?stkn=ajdtaXYyN3NnZzBi", "status": "arrived", "table": "", "time": "12.30pm", "username": "jowiepeace"}, "k031": {"beef": "yes", "confirmed": true, "createdAt": 1791000000031, "date": "2026-10-06", "notes": "", "pax": "2pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/6mAUDTWd22J", "status": "arrived", "table": "", "time": "1230pm", "username": "叫我马克思哟～"}, "k032": {"beef": "no", "confirmed": true, "createdAt": 1791000000032, "date": "2026-10-06", "notes": "", "pax": "1 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@akumaryam", "status": "arrived", "table": "", "time": "1pm", "username": "@akumaryam"}, "k033": {"beef": "no", "confirmed": false, "createdAt": 1791000000033, "date": "2026-10-06", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/m/AfzZmhBz2SS", "status": "arrived", "table": "", "time": "2pm", "updatedAt": 1791100000000, "username": "愛吃的杰妮絲"}, "k034": {"beef": "no", "confirmed": true, "createdAt": 1791000000034, "date": "2026-10-06", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/shuhan_621?stkn=a2hkdmtrbGQxMGV6", "status": "arrived", "table": "", "time": "2pm", "updatedAt": 1791100000000, "username": "shuhan_621"}, "k035": {"beef": "no", "confirmed": false, "createdAt": 1791000000035, "date": "2026-10-06", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "arrived", "table": "", "time": "3pm", "updatedAt": 1791100000000, "username": "可丽饼"}, "k036": {"beef": "no", "confirmed": false, "createdAt": 1791000000036, "date": "2026-10-06", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/evonyeoh_?stkn=YzgwaTk0M3J4a3Jw", "status": "arrived", "table": "", "time": "3.30pm", "updatedAt": 1791100000000, "username": "evonyeoh_"}, "k037": {"beef": "yes", "confirmed": true, "createdAt": 1791000000037, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/farahfadzlii?stkn=MXBlY2R5OXl0OXI0bQ==", "status": "pending", "table": "", "time": "4pm", "updatedAt": 1791100000000, "username": "farahfadzlii"}, "k038": {"beef": "no", "confirmed": true, "createdAt": 1791000000038, "date": "2026-10-06", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/chrislynn____?stkn=Mnp5NjJsMjMydmw=", "status": "arrived", "table": "", "time": "4pm", "updatedAt": 1791100000000, "username": "chrislynn___"}, "k039": {"beef": "yes", "confirmed": true, "createdAt": 1791000000039, "date": "2026-10-06", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/r4BRMo2Ddb", "status": "arrived", "table": "", "time": "5pm", "updatedAt": 1791100000000, "username": "十一月的风景"}, "k040": {"beef": "yes", "confirmed": true, "createdAt": 1791000000040, "date": "2026-10-06", "notes": "", "pax": "3-4pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/farislee__?stkn=MTVpOTFzN281ZHRoeQ==", "status": "arrived", "table": "", "time": "6pm", "updatedAt": 1791100000000, "username": "farislee__"}, "k041": {"beef": "no", "confirmed": true, "createdAt": 1791000000041, "date": "2026-10-06", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5e8338460000000001007987?channel_type=msg_chat_page&xsec_token=ABSy278kKLqisTTZeZumoXVpT4w3M4g1FonTum5oNAlac%3D&xsec_source=pc_chat", "status": "arrived", "table": "", "time": "6pm", "updatedAt": 1791100000000, "username": "卡咔啦的咔啦咔啦星球"}, "k042": {"beef": "yes", "confirmed": true, "createdAt": 1791000000042, "date": "2026-10-06", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jensoojxx?stkn=bHEzMTE3ZXpvejU=", "status": "arrived", "table": "", "time": "6.30pm", "updatedAt": 1791100000000, "username": "jensoojxx"}, "k043": {"beef": "yes", "confirmed": true, "createdAt": 1791000000043, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/yunitaliam?stkn=dzZ4Y2V4M2d1bnB6", "status": "pending", "table": "", "time": "6-7pm", "updatedAt": 1791100000000, "username": "yunitaliam"}, "k044": {"beef": "no", "confirmed": true, "createdAt": 1791000000044, "date": "2026-10-06", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/68562e74000000001d014bf2?xsec_token=ABB-nju3v31l1-OcCBjKwGlU7UcnRoRJHCKXuyvVejp78%3D&xsec_source=pc_chat", "status": "cancelled", "table": "", "time": "7 pm", "username": "棉花糖不加糖"}, "k045": {"beef": "no", "confirmed": true, "createdAt": 1791000000045, "date": "2026-10-06", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "https://xhslink.cn/o/64qnvrr6ReV", "profileLink": "https://xhslink.cn/o/9q0LX2iIVJX", "status": "arrived", "table": "", "time": "7pm", "updatedAt": 1791200000000, "username": "蔡蔡"}, "k046": {"beef": "no", "confirmed": false, "createdAt": 1791000000046, "date": "2026-10-06", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/m/5Jg84SJuiKb", "status": "arrived", "table": "", "time": "8pm", "updatedAt": 1791100000000, "username": "小炆要天天开心"}, "k047": {"beef": "no", "confirmed": true, "createdAt": 1791000000047, "date": "2026-10-06", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/josylnncheng?stkn=MTBmbms1a3F4OGUwZQ==", "status": "arrived", "table": "", "time": "8pm", "updatedAt": 1791100000000, "username": "josylnncheng"}, "k048": {"beef": "no", "confirmed": true, "createdAt": 1791000000048, "date": "2026-10-07", "notes": "", "pax": "4pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/vannessakoay?stkn=aXBwbXdnNjM0OWs=", "status": "arrived", "table": "", "time": "11am", "updatedAt": 1791344504039, "username": "vanessakoay"}, "k050": {"beef": "no", "confirmed": true, "createdAt": 1791000000050, "date": "2026-10-07", "notes": "", "pax": "4 pax + 1 (pay themselves)", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/travelwithyzzy?stkn=bjV4MDlxcTZvMGsw", "status": "arrived", "table": "", "time": "12pm", "updatedAt": 1791100000000, "username": "travelwithyzzy"}, "k051": {"beef": "yes", "confirmed": false, "createdAt": 1791000000051, "date": "2026-10-07", "notes": "", "pax": "2 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12pm", "updatedAt": 1791345186280, "username": "Mommyhelena"}, "k052": {"beef": "no", "confirmed": false, "createdAt": 1791000000052, "date": "2026-10-07", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "arrived", "table": "", "time": "12pm", "updatedAt": 1791100000000, "username": "喔土豆"}, "k053": {"beef": "no", "confirmed": true, "createdAt": 1791000000053, "date": "2026-10-07", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/ALXpzzfEqvX", "status": "arrived", "table": "", "time": "1pm", "updatedAt": 1791200000000, "username": "月白知许"}, "k054": {"beef": "no", "confirmed": false, "createdAt": 1791000000054, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "arrived", "table": "", "time": "12PM", "updatedAt": 1791100000000, "username": "欧气财女 candice"}, "k055": {"beef": "", "confirmed": false, "createdAt": 1791000000055, "date": "2026-10-07", "notes": "Repeated name", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "1pm", "username": "勋哥"}, "k056": {"beef": "no", "confirmed": false, "createdAt": 1791000000056, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/m/NRFuFfvHZZ", "status": "arrived", "table": "", "time": "1:30pm", "updatedAt": 1791200000000, "username": "tupai ( 今天也要奥力给）"}, "k057": {"beef": "yes", "confirmed": true, "createdAt": 1791000000057, "date": "2026-10-06", "notes": "", "pax": "2-3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/64875e9a000000001c02af1d?xsec_token=AB47SZQKu73cDbEoVP9cRiq5QmtrZEIK77S5xzWA06ONQ%3D&xsec_source=pc_chat", "status": "arrived", "table": "", "time": "5pm", "updatedAt": 1791100000000, "username": "SillyTown"}, "k058": {"beef": "no", "confirmed": false, "createdAt": 1791000000058, "date": "2026-10-07", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "arrived", "table": "", "time": "2pm", "updatedAt": 1791200000000, "username": "恐龍豆豆"}, "k059": {"beef": "yes", "confirmed": true, "createdAt": 1791000000059, "date": "2026-10-07", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/easteryeoh?stkn=MWxhZWh4ZnNsdW03dA==", "status": "pending", "table": "", "time": "5pm", "username": "easteryeoh"}, "k060": {"beef": "", "confirmed": false, "createdAt": 1791000000060, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6pm", "username": "姿苇吃喝玩乐"}, "k061": {"beef": "no", "confirmed": true, "createdAt": 1791000000061, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5c5fe91c000000001b022b11?xsec_token=ABQoaUVxnKBh-7yGj3QXWaco3eRtoeJTcvik50-0oxzU4%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "6 pm", "username": "千雅爱手作"}, "k062": {"beef": "no", "confirmed": true, "createdAt": 1791000000062, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/61bdf9bd0000000010005402?channel_type=msg_chat_page&xsec_token=ABdQJwiq9x2Za6natPmO6_gjambh5nHfyrHemvX19Tk8o%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "630pm", "username": "是个吃货"}, "k063": {"beef": "yes", "confirmed": true, "createdAt": 1791000000063, "date": "2026-10-07", "notes": "", "pax": "4pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/leeqin?stkn=OXowcjk3MDJpN3gy", "status": "pending", "table": "", "time": "7pm", "username": "leeqin"}, "k064": {"beef": "yes", "confirmed": true, "createdAt": 1791000000064, "date": "2026-10-07", "notes": "", "pax": "2 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/liahasty?stkn=MXVnOW9pbHpiZTM1YQ==", "status": "pending", "table": "", "time": "7pm", "username": "liahasty"}, "k065": {"beef": "", "confirmed": false, "createdAt": 1791000000065, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "8 pm", "username": "冰梦喵"}, "k066": {"beef": "", "confirmed": true, "createdAt": 1791000000066, "date": "2026-10-07", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/5Sw2IzqbLqR", "status": "pending", "table": "", "time": "8pm", "username": "天天"}, "k067": {"beef": "no", "confirmed": true, "createdAt": 1791000000067, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/4BoCaj5eiFA", "status": "pending", "table": "", "time": "8pm", "username": "昙花小丸子"}, "k068": {"beef": "", "confirmed": false, "createdAt": 1791000000068, "date": "2026-10-08", "notes": "Repeated name", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12pm", "username": "小马 🐻"}, "k069": {"beef": "", "confirmed": false, "createdAt": 1791000000069, "date": "2026-10-08", "notes": "Repeated name", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "1pm", "username": "勋哥"}, "k070": {"beef": "", "confirmed": false, "createdAt": 1791000000070, "date": "2026-10-08", "notes": "", "pax": "2-3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "1pm", "username": "冰的冰冰的冰冰"}, "k071": {"beef": "", "confirmed": false, "createdAt": 1791000000071, "date": "2026-10-08", "notes": "", "pax": "2 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/murni.alysa?stkn=eTVpemt6bzdrMDVk", "status": "pending", "table": "", "time": "2.30pm", "username": "murni.alysa"}, "k072": {"beef": "", "confirmed": false, "createdAt": 1791000000072, "date": "2026-10-08", "notes": "", "pax": "4 pax+1 baby", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5d5616190000000001003132?xsec_token=YBKORCxdJScg-2oR7y5yI6UJMTDbEDFUTQ3oWmQwPGacA=&xsec_source=app_share&xhsshare=CopyLink&shareRedId=N0o3NjQ7NUI2NzUyOTgwNjY0OTc3Njk7&apptime=1791193756&share_id=42aa98dbaadd41fbbb17f1a48e93f965", "status": "pending", "table": "", "time": "2.45pm", "username": "熙歪歪宝妈笔记"}, "k073": {"beef": "", "confirmed": true, "createdAt": 1791000000073, "date": "2026-10-08", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5ce143380000000011011c2e?channel_type=msg_chat_page&xsec_token=ABq_ocQpy-VJnoUkQCJ2gpe0HlUfwTmUH-66e8ndkcRcs%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "3pm", "username": "Vivien 的真实世界"}, "k074": {"beef": "", "confirmed": false, "createdAt": 1791000000074, "date": "2026-10-08", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "4.30 pm", "username": "晨晨妈咪"}, "k075": {"beef": "yes", "confirmed": true, "createdAt": 1791000000075, "date": "2026-10-08", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/cris_sinmei?stkn=MzE2eWFyN2pmaXp4", "status": "pending", "table": "", "time": "6pm", "username": "cris_sinmei"}, "k076": {"beef": "yes", "confirmed": true, "createdAt": 1791000000076, "date": "2026-10-08", "notes": "", "pax": "4pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/qianqingsim?stkn=MW16bndldTg1czM2bw==", "status": "pending", "table": "", "time": "6pm", "username": "qianqingsim"}, "k077": {"beef": "", "confirmed": false, "createdAt": 1791000000077, "date": "2026-10-08", "notes": "", "pax": "3 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6pm", "username": "farihaizzaty_"}, "k078": {"beef": "yes", "confirmed": true, "createdAt": 1791000000078, "date": "2026-10-08", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/artikahmohdali?stkn=MTF4dGpiaGFiamtpbQ==", "status": "pending", "table": "", "time": "6pm", "username": "artikahmohdali"}, "k079": {"beef": "yes", "confirmed": true, "createdAt": 1791000000079, "date": "2026-10-08", "notes": "", "pax": "3 + 1 (kids)", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/rachelhooichin?stkn=MXB2N3NoYzk4bmE5dQ==", "status": "pending", "table": "", "time": "7pm", "username": "rachelhooichin"}, "k080": {"beef": "", "confirmed": false, "createdAt": 1791000000080, "date": "2026-10-08", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7:30pm", "username": "Vv不烦系列"}, "k081": {"beef": "", "confirmed": false, "createdAt": 1791000000081, "date": "2026-10-08", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7:30pm", "username": "星星"}, "k082": {"beef": "", "confirmed": true, "createdAt": 1791000000082, "date": "2026-10-08", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/9Rs54tZYnVx", "status": "pending", "table": "", "time": "8pm", "username": "走走看看"}, "k083": {"beef": "", "confirmed": true, "createdAt": 1791000000083, "date": "2026-10-08", "notes": "", "pax": "3pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@brendaxk?_r=1&_t=ZS-9A9aR0x1Okf", "status": "pending", "table": "", "time": "8pm", "username": "brendaxk"}, "k084": {"beef": "", "confirmed": false, "createdAt": 1791000000084, "date": "2026-10-08", "notes": "", "pax": "3 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "8pm", "username": "Adwafiq"}, "k085": {"beef": "no", "confirmed": true, "createdAt": 1791000000085, "date": "2026-10-08", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5e04c6a20000000001001c5f?channel_type=msg_chat_page&xsec_token=ABj2ahNUV7RMUSHWft_UXjQTeFfyVViqjSv81kZOKiGmU%3D&xsec_source=pc_chat", "status": "cancelled", "table": "", "time": "8pm", "username": "橙素薇"}, "k086": {"beef": "", "confirmed": false, "createdAt": 1791000000086, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12pm", "username": "Micky"}, "k087": {"beef": "no", "confirmed": true, "createdAt": 1791000000087, "date": "2026-10-09", "notes": "", "pax": "2-3pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/63cbuzFAVdJ", "status": "pending", "table": "", "time": "12pm", "username": "xfilm"}, "k088": {"beef": "yes", "confirmed": true, "createdAt": 1791000000088, "date": "2026-10-09", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/zulaikanatasha_?stkn=djl3NnN1b3ZhOGx6", "status": "pending", "table": "", "time": "1pm", "username": "zulaikanatasha_"}, "k089": {"beef": "yes", "confirmed": true, "createdAt": 1791000000089, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/aiyla.sha?stkn=engzZXRzNzIwNTN3", "status": "pending", "table": "", "time": "1-2pm", "username": "aiyla.sha"}, "k090": {"beef": "no", "confirmed": true, "createdAt": 1791000000090, "date": "2026-10-09", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5fd5d5fe00000000010059c9?xsec_token=ABsDhDxF_PDK6aAoCAVzKE5b5GMSQPT5oYwxr2owEB1o0%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "2pm", "username": "小恐龙们的保姆🦕"}, "k091": {"beef": "", "confirmed": false, "createdAt": 1791000000091, "date": "2026-10-09", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "2 pm", "username": "一只姐力薯"}, "k092": {"beef": "no", "confirmed": true, "createdAt": 1791000000092, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/hongzhan95?stkn=MXB5MHl1aDh5dWpmbg==", "status": "pending", "table": "", "time": "2pm", "username": "hongzhan95"}, "k093": {"beef": "", "confirmed": false, "createdAt": 1791000000093, "date": "2026-10-09", "notes": "", "pax": "3 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "4pm", "username": "daintyfairyyy"}, "k094": {"beef": "no", "confirmed": true, "createdAt": 1791000000094, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5d5ac59700000000010193a1?xsec_token=ABtW4QbU67f0Wf-4cUMGHDTlD12GXrXE3G7IBmTxdVLow%3D&xsec_source=pc_search", "status": "cancelled", "table": "", "time": "5pm", "username": "Ashley.a"}, "k095": {"beef": "no", "confirmed": true, "createdAt": 1791000000095, "date": "2026-10-09", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/huiiineee25?stkn=NGlla2FveDJzcXUy", "status": "pending", "table": "", "time": "5pm", "username": "huiiineee25"}, "k096": {"beef": "no", "confirmed": true, "createdAt": 1791000000096, "date": "2026-10-09", "notes": "", "pax": "2pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/2cplmeDc8u4", "status": "pending", "table": "", "time": "530pm", "username": "可可妮🎀"}, "k097": {"beef": "no", "confirmed": true, "createdAt": 1791000000097, "date": "2026-10-09", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/HpPPq3D76K", "status": "pending", "table": "", "time": "6pm", "username": "爱吃薯条的佐文思"}, "k098": {"beef": "", "confirmed": true, "createdAt": 1791000000098, "date": "2026-10-09", "notes": "", "pax": "4pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@inshirahinsharuki?_r=1&_t=ZS-9A8O2tZGsez", "status": "pending", "table": "", "time": "6pm", "username": "Inshirah Insharuki"}, "k099": {"beef": "", "confirmed": false, "createdAt": 1791000000099, "date": "2026-10-09", "notes": "", "pax": "2-3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7pm", "username": "吃个不停"}, "k100": {"beef": "yes", "confirmed": true, "createdAt": 1791000000100, "date": "2026-10-09", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/attention_really_my_name?stkn=MXNxZzFlcXlncmh6aw==", "status": "pending", "table": "", "time": "7pm", "username": "attention_really_my_name"}, "k101": {"beef": "", "confirmed": false, "createdAt": 1791000000101, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "8pm", "username": "Janice瑩"}, "k102": {"beef": "yes", "confirmed": true, "createdAt": 1791000000102, "date": "2026-10-09", "notes": "", "pax": "4 pax (2 kids)", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/ohhfiesya?stkn=MTd1ZHcxNjZwczF3cQ==", "status": "pending", "table": "", "time": "8pm", "username": "ohhfiesya"}, "k103": {"beef": "no", "confirmed": false, "createdAt": 1791000000103, "date": "2026-10-09", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/lowshuyie?stkn=a2MyZ3Z0Nm91c2U3", "status": "pending", "table": "", "time": "8pm", "username": "lowshuyie"}, "k104": {"beef": "no", "confirmed": true, "createdAt": 1791000000104, "date": "2026-10-09", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/rouxean__?stkn=aHN4bmFuZjg0NHZm", "status": "pending", "table": "", "time": "12pm", "username": "rouxean__"}, "k105": {"beef": "", "confirmed": false, "createdAt": 1791000000105, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "11am", "username": "是洁希呀🍙🍙🍙"}, "k106": {"beef": "", "confirmed": false, "createdAt": 1791000000106, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "11am", "username": "葡萄の小布点"}, "k107": {"beef": "no", "confirmed": true, "createdAt": 1791000000107, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jaychhablog?stkn=dDF1czE1OGc0NWdn", "status": "pending", "table": "", "time": "11am", "username": "jaychablog"}, "k108": {"beef": "", "confirmed": false, "createdAt": 1791000000108, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "11am", "username": "Ic channel"}, "k109": {"beef": "", "confirmed": true, "createdAt": 1791000000109, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@fz_sempoi", "status": "pending", "table": "", "time": "1130am", "username": "@fz_sempoi"}, "k110": {"beef": "", "confirmed": true, "createdAt": 1791000000110, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/6FFBIeNF9x6", "status": "pending", "table": "", "time": "1130am", "username": "快乐吃货🥐"}, "k111": {"beef": "", "confirmed": false, "createdAt": 1791000000111, "date": "2026-10-10", "notes": "", "pax": "5 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "11.30am", "username": "乐可"}, "k112": {"beef": "", "confirmed": true, "createdAt": 1791000000112, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@usernameisaliah", "status": "pending", "table": "", "time": "12pm", "username": "@usernameisaliah"}, "k113": {"beef": "", "confirmed": true, "createdAt": 1791000000113, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@myfoodhunters", "status": "pending", "table": "", "time": "12pm", "username": "@myfoodhunters"}, "k114": {"beef": "", "confirmed": false, "createdAt": 1791000000114, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12pm", "username": "吃饱就睡呼噜噜"}, "k115": {"beef": "yes", "confirmed": true, "createdAt": 1791000000115, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/xoaryaaj_?stkn=aWNlOGkwdmc0aWp4", "status": "pending", "table": "", "time": "12.30pm", "username": "xoaryaaj_"}, "k116": {"beef": "", "confirmed": false, "createdAt": 1791000000116, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12.30pm", "username": "恐龙豆豆"}, "k117": {"beef": "no", "confirmed": true, "createdAt": 1791000000117, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/geoffrey_eats?stkn=amI4cWh0Y3pkZTQ0", "status": "pending", "table": "", "time": "1pm", "username": "geoffrey_eats"}, "k118": {"beef": "no", "confirmed": true, "createdAt": 1791000000118, "date": "2026-10-10", "notes": "", "pax": "2 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/__j.xuann._?stkn=MTExeDU0aGt6M3l4NQ==", "status": "pending", "table": "", "time": "1pm", "username": "__j.xxuann._"}, "k119": {"beef": "", "confirmed": false, "createdAt": 1791000000119, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "1pm", "username": "三分钟热度"}, "k120": {"beef": "yes", "confirmed": true, "createdAt": 1791000000120, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/ginating95?stkn=MXU5YWUxZWM2bHFrYw==", "status": "pending", "table": "", "time": "1-2pm", "username": "ginating95"}, "k121": {"beef": "no", "confirmed": true, "createdAt": 1791000000121, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/hi_bye.life?stkn=ZmhvNWpubWdscXhw", "status": "pending", "table": "", "time": "2pm", "username": "hi_bye.life"}, "k122": {"beef": "yes", "confirmed": true, "createdAt": 1791000000122, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/kelxyismissing?stkn=MWI0cThsMmloYncxNQ==", "status": "pending", "table": "", "time": "2pm", "username": "kelxyismissing"}, "k123": {"beef": "", "confirmed": true, "createdAt": 1791000000123, "date": "2026-10-10", "notes": "", "pax": "2 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@by_anisazmi", "status": "pending", "table": "", "time": "230pm", "username": "@by_anisazmi"}, "k124": {"beef": "", "confirmed": false, "createdAt": 1791000000124, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "2.30pm", "username": "老麦"}, "k125": {"beef": "", "confirmed": true, "createdAt": 1791000000125, "date": "2026-10-10", "notes": "", "pax": "2 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@bankernoney?_r=1&_t=ZS-99kOZzIKBLo", "status": "pending", "table": "", "time": "3pm", "username": "ney🐝"}, "k126": {"beef": "", "confirmed": false, "createdAt": 1791000000126, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "3 pm", "username": "7.24不打烊"}, "k127": {"beef": "", "confirmed": true, "createdAt": 1791000000127, "date": "2026-10-10", "notes": "", "pax": "2 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@lisasukatravel", "status": "pending", "table": "", "time": "3pm", "username": "@lisasukatravel"}, "k128": {"beef": "yes", "confirmed": true, "createdAt": 1791000000128, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/neesa.hassan?stkn=YXZhdHJ6NWRrcWwz", "status": "pending", "table": "", "time": "3pm", "username": "neesa.hassan"}, "k129": {"beef": "", "confirmed": true, "createdAt": 1791000000129, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@fkpzi", "status": "pending", "table": "", "time": "3pm", "username": "@fkpzi"}, "k130": {"beef": "no", "confirmed": true, "createdAt": 1791000000130, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@mathuniitaservai?_r=1&_t=ZS-99kIJWFp7zQ", "status": "pending", "table": "", "time": "4pm", "username": "Mathu Niia"}, "k131": {"beef": "", "confirmed": false, "createdAt": 1791000000131, "date": "2026-10-10", "notes": "", "pax": "2 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "4pm", "username": "Suhaila kinsol"}, "k132": {"beef": "yes", "confirmed": true, "createdAt": 1791000000132, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jameznextdoor.my?stkn=MXIzcG1jYmd0YnNraA==", "status": "pending", "table": "", "time": "4pm", "username": "jameznextdoor.my"}, "k133": {"beef": "", "confirmed": true, "createdAt": 1791000000133, "date": "2026-10-09", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5cfde06d000000001802d5c8?xsec_token=AB0zXC0Sxa70e_-p0qwStMVpJbPLyxT70wtzx7gKm0_eA%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "4pm", "updatedAt": 1791200000000, "username": "蛋黄馅"}, "k134": {"beef": "yes", "confirmed": true, "createdAt": 1791000000134, "date": "2026-10-10", "notes": "", "pax": "4pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/evetan1203?stkn=OG93YTZvajZyYWpt", "status": "pending", "table": "", "time": "5pm", "username": "evetan1203"}, "k135": {"beef": "", "confirmed": false, "createdAt": 1791000000135, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "5pm", "username": "熙熙的妈妈"}, "k136": {"beef": "", "confirmed": false, "createdAt": 1791000000136, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "5pm", "username": "Ruru"}, "k137": {"beef": "no", "confirmed": false, "createdAt": 1791000000137, "date": "2026-10-07", "notes": "", "pax": "2 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/foodie.bymoon?stkn=MW9yOG82NmdqMHM0NQ==", "status": "arrived", "table": "", "time": "4pm", "updatedAt": 1791200000000, "username": "foodie.bymoon"}, "k138": {"beef": "no", "confirmed": true, "createdAt": 1791000000138, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/604596ea0000000001008905?xsec_token=ABk7Mk8fxlpIixfBqZ5gFcmvJa5Y1pJKemx8viXbt4WJo%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "6pm", "username": "我是JY"}, "k139": {"beef": "", "confirmed": true, "createdAt": 1791000000139, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@shuzwannie", "status": "pending", "table": "", "time": "6 pm", "username": "@shuzwannie"}, "k140": {"beef": "", "confirmed": true, "createdAt": 1791000000140, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/shineeeeee____?stkn=MTNvY2czcjdtbGFpNw==", "status": "pending", "table": "", "time": "6pm", "username": "shineeeeee___"}, "k141": {"beef": "no", "confirmed": true, "createdAt": 1791000000141, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/nicholasxwl?stkn=MXRkcHpxMm56N3lobA==", "status": "pending", "table": "", "time": "6pm", "username": "nicholasxwl"}, "k142": {"beef": "", "confirmed": false, "createdAt": 1791000000142, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7pm", "username": "Purplepumpkin"}, "k143": {"beef": "", "confirmed": false, "createdAt": 1791000000143, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7pm", "username": "酷酷cool"}, "k144": {"beef": "", "confirmed": false, "createdAt": 1791000000144, "date": "2026-10-12", "notes": "", "pax": "2-4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "8pm", "updatedAt": 1791100000000, "username": "垃圾堆的金"}, "k145": {"beef": "", "confirmed": true, "createdAt": 1791000000145, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/650ddc44000000001702009c?xsec_token=ABOp18JbjHPDkvvd4lLYTNSCzt2Rd4q0rM6gYSAnFoCNI=&xsec_source=pc_chat", "status": "pending", "table": "", "time": "730pm", "username": "Aices"}, "k146": {"beef": "", "confirmed": false, "createdAt": 1791000000146, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "8pm", "username": "不宏不行"}, "k147": {"beef": "", "confirmed": false, "createdAt": 1791000000147, "date": "2026-10-12", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "8pm", "updatedAt": 1791100000000, "username": "焦糖豆沙包"}, "k148": {"beef": "yes", "confirmed": true, "createdAt": 1791000000148, "date": "2026-10-10", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jijitankyy?stkn=a20yaWlrYTJpaGpq", "status": "pending", "table": "", "time": "8pm", "username": "jijitankyy"}, "k149": {"beef": "yes", "confirmed": true, "createdAt": 1791000000149, "date": "2026-10-10", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/itsazzahraaa?stkn=ZWtnc2p5Mmh4czFh", "status": "pending", "table": "", "time": "8pm", "username": "itsazzahraaa"}, "k150": {"beef": "", "confirmed": false, "createdAt": 1791000000150, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "11am", "username": "我家智轩的妈妈"}, "k151": {"beef": "no", "confirmed": true, "createdAt": 1791000000151, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5e4915f90000000001009bc3?xsec_token=ABnWTOaYDMBVWRjAE8D-yEvVDEJjRt56DbWW5NlWO1pfY=&xsec_source=pc_chat", "status": "pending", "table": "", "time": "12pm", "username": "小鸭鸭"}, "k152": {"beef": "", "confirmed": false, "createdAt": 1791000000152, "date": "2026-10-11", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12pm", "username": "去哪里zzzack"}, "k153": {"beef": "", "confirmed": true, "createdAt": 1791000000153, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/66063988000000000600f5da?xsec_token=ABjfwOLivS4CN-YmfldHFzIuBhvsEWHLXgDJ8Bex44Yx4%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "12 pm", "username": "我要呷好料 OneTwoEats"}, "k154": {"beef": "", "confirmed": false, "createdAt": 1791000000154, "date": "2026-10-11", "notes": "", "pax": "2 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12pm", "username": "Nurhdzieah"}, "k155": {"beef": "", "confirmed": false, "createdAt": 1791000000155, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "TikTok", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12pm", "username": "Reviewara"}, "k156": {"beef": "no", "confirmed": true, "createdAt": 1791000000156, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/yicai95?stkn=dDB1ODlhNjF0YTNy", "status": "pending", "table": "", "time": "1pm", "username": "yicai95"}, "k157": {"beef": "", "confirmed": true, "createdAt": 1791000000157, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/2R9Kj1UJdRy", "status": "pending", "table": "", "time": "1pm", "username": "歪歪一吃货"}, "k158": {"beef": "", "confirmed": false, "createdAt": 1791000000158, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "1.30 pm", "username": "胤斧头"}, "k159": {"beef": "no", "confirmed": true, "createdAt": 1791000000159, "date": "2026-10-11", "notes": "", "pax": "2-4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/62dc9bb8000000001f0056e9?channel_type=msg_chat_page&xsec_token=AB9LG4rUSWih2bQapXeHiX6qSDkKmA_dmtwu1gxJNvHrM%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "2pm", "username": "PG生活碎片"}, "k160": {"beef": "yes", "confirmed": true, "createdAt": 1791000000160, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jovie.c?stkn=OGw0bzB6eHM4eTAx", "status": "pending", "table": "", "time": "2pm", "username": "jovie.c"}, "k161": {"beef": "", "confirmed": true, "createdAt": 1791000000161, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/6347e8af000000001901e049?xsec_token=ABaxLGGfv6iWlX9lSt0i-k354smRCyS34PQPI0mu821Hg%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "2pm", "username": "黛安娜🐣"}, "k162": {"beef": "", "confirmed": false, "createdAt": 1791000000162, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "2pm", "username": "冒个泡泡"}, "k163": {"beef": "yes", "confirmed": true, "createdAt": 1791000000163, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/the.mieux?stkn=eGtucnJjMmJ2eGhz", "status": "pending", "table": "", "time": "3pm", "username": "the.mieux"}, "k164": {"beef": "yes", "confirmed": true, "createdAt": 1791000000164, "date": "2026-10-11", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/the.divaaaa?stkn=MXY1YmwydnVpeG15cA==", "status": "pending", "table": "", "time": "3pm", "username": "the.divaaaa"}, "k165": {"beef": "", "confirmed": false, "createdAt": 1791000000165, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "3pm", "username": "林檬白开水"}, "k166": {"beef": "no", "confirmed": true, "createdAt": 1791000000166, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/yippie.yoyo?stkn=dnBuZmNlcTY2Zjdh", "status": "pending", "table": "", "time": "3pm", "username": "yippie.yoyo"}, "k167": {"beef": "", "confirmed": false, "createdAt": 1791000000167, "date": "2026-10-11", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "4pm", "username": "贪吃小妹嫔"}, "k168": {"beef": "yes", "confirmed": true, "createdAt": 1791000000168, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/izahraaisy?stkn=MXRnOWd0MW02NnY5dQ==", "status": "pending", "table": "", "time": "4pm", "username": "izahraaisy"}, "k169": {"beef": "", "confirmed": true, "createdAt": 1791000000169, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "TikTok", "postLink": "", "profileLink": "https://www.tiktok.com/@hajarazudin", "status": "pending", "table": "", "time": "5 pm", "username": "Hajarazudin | Gulaidekimchi🥘"}, "k170": {"beef": "", "confirmed": false, "createdAt": 1791000000170, "date": "2026-10-11", "notes": "", "pax": "2 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "5pm", "username": "妮有福分享"}, "k171": {"beef": "", "confirmed": false, "createdAt": 1791000000171, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "5pm", "username": "草莓熊"}, "k172": {"beef": "", "confirmed": false, "createdAt": 1791000000172, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "2pm", "updatedAt": 1791100000000, "username": "别叫我达芬奇"}, "k173": {"beef": "", "confirmed": false, "createdAt": 1791000000173, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "5pm", "username": "喔土豆"}, "k174": {"beef": "", "confirmed": false, "createdAt": 1791000000174, "date": "2026-10-11", "notes": "", "pax": "2-4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6pm", "username": "是薯泥呀"}, "k175": {"beef": "yes", "confirmed": true, "createdAt": 1791000000175, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/_priscillalim_?stkn=cjFtYXp5YXhrcTBm", "status": "pending", "table": "", "time": "6pm", "username": "_priscillalim___"}, "k176": {"beef": "", "confirmed": false, "createdAt": 1791000000176, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6pm", "username": "榆"}, "k177": {"beef": "", "confirmed": false, "createdAt": 1791000000177, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6pm", "username": "萝卜不吃鱼"}, "k178": {"beef": "", "confirmed": false, "createdAt": 1791000000178, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6.30pm", "username": "维尼狂粉"}, "k179": {"beef": "no", "confirmed": true, "createdAt": 1791000000179, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/56ZWhNpQWWL", "status": "pending", "table": "", "time": "630pm", "username": "辣辣"}, "k180": {"beef": "no", "confirmed": true, "createdAt": 1791000000180, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/64938af8000000001f0061a5?xsec_token=ABVQHJ40A4IxUTZxQKcoj2e9pXfki-wSV4mI4p-h6qK8M%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "7pm", "username": "身高不够"}, "k181": {"beef": "", "confirmed": true, "createdAt": 1791000000181, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5d26199f00000000100013d6?xsec_token=ABj5PJO2CTfzQ-SfPwVNOL4LSt28MfGGhIbTDn0XWZ184%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "7 pm", "username": "花现美食🥜"}, "k182": {"beef": "", "confirmed": true, "createdAt": 1791000000182, "date": "2026-10-11", "notes": "", "pax": "3 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/5da02f720000000001002e5c?channel_type=msg_chat_page&xsec_token=ABw3LNII7MNn5kZLSqIR8-gibC5BbKDcE3eMUMnlK0uHY%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "8pm", "username": "_wanshih"}, "k183": {"beef": "no", "confirmed": true, "createdAt": 1791000000183, "date": "2026-10-11", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/8uXx1aYRDfo", "status": "pending", "table": "", "time": "11am", "username": "和深深一起淋过雨的海米"}, "k184": {"beef": "no", "confirmed": true, "createdAt": 1791000000184, "date": "2026-10-12", "notes": "", "pax": "3 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/nice.carrot_?stkn=aDdmM21xbTR5eG84", "status": "pending", "table": "", "time": "12pm", "username": "nice.carrot_"}, "k185": {"beef": "no", "confirmed": true, "createdAt": 1791000000185, "date": "2026-10-12", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://www.xiaohongshu.com/user/profile/6a267a42000000000d034c00?xsec_token=ABPhyofTfgUaJ-OxwYmVOZLpvTmjutuxclBCFA2FQxP94%3D&xsec_source=pc_chat", "status": "pending", "table": "", "time": "12 pm", "username": "生煎包包"}, "k186": {"beef": "", "confirmed": false, "createdAt": 1791000000186, "date": "2026-10-12", "notes": "", "pax": "3-4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "12.30pm", "username": "姿苇吃喝玩乐"}, "k187": {"beef": "", "confirmed": false, "createdAt": 1791000000187, "date": "2026-10-12", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6.30pm", "username": "小肥爱吃"}, "k188": {"beef": "no", "confirmed": true, "createdAt": 1791000000188, "date": "2026-10-12", "notes": "", "pax": "4pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/5TMXOJUwcCl", "status": "pending", "table": "", "time": "6pm", "username": "Joyceee🎀"}, "k189": {"beef": "", "confirmed": true, "createdAt": 1791000000189, "date": "2026-10-12", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7pm", "username": "allyis_me_98"}, "k190": {"beef": "", "confirmed": false, "createdAt": 1791000000190, "date": "2026-10-12", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7 pm", "username": "阿贝囖 Abellooo"}, "k191": {"beef": "", "confirmed": false, "createdAt": 1791000000191, "date": "2026-10-12", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7 pm", "username": "槟城の5星Hotel甜品师艾丽儿🎂"}, "k192": {"beef": "yes", "confirmed": true, "createdAt": 1791000000192, "date": "2026-10-12", "notes": "", "pax": "2pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/fynahere?stkn=MXBhb29qcGFuOGdsYQ==", "status": "pending", "table": "", "time": "8pm", "username": "fynahere"}, "k193": {"beef": "no", "confirmed": true, "createdAt": 1791000000193, "date": "2026-10-12", "notes": "", "pax": "3pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/AT5cYvZFUOK", "status": "pending", "table": "", "time": "8pm", "username": "嘴馋不完"}, "k194": {"beef": "no", "confirmed": true, "createdAt": 1791000000194, "date": "2026-10-12", "notes": "", "pax": "4pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/vannessakoay?stkn=aXBwbXdnNjM0OWs=", "status": "pending", "table": "", "time": "2pm", "username": "vanessakoay"}, "k201": {"beef": "no", "confirmed": false, "createdAt": 1791100000001, "date": "2026-10-06", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "http://xhslink.com/o/9O5d0qdSJvE", "profileLink": "", "status": "arrived", "table": "", "time": "8pm", "updatedAt": 1791100000001, "username": "富婆带你挖好康"}, "k202": {"beef": "no", "confirmed": false, "createdAt": 1791100000002, "date": "2026-10-07", "notes": "", "pax": "2 pax", "platform": "", "postLink": "", "profileLink": "", "status": "arrived", "table": "", "time": "3pm", "updatedAt": 1791200000000, "username": "爱玩阿Ann说攻略"}, "k203": {"beef": "", "confirmed": true, "createdAt": 1791100000003, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "https://xhslink.cn/o/Jkmgdgvc6Y", "status": "pending", "table": "", "time": "730pm", "updatedAt": 1791100000003, "username": "槟城小莉"}, "k204": {"beef": "", "confirmed": false, "createdAt": 1791100000004, "date": "2026-10-08", "notes": "", "pax": "4 pax", "platform": "", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "5:30pm", "updatedAt": 1791100000004, "username": "猪猪吃喝玩乐记"}, "k205": {"beef": "", "confirmed": false, "createdAt": 1791100000005, "date": "2026-10-08", "notes": "", "pax": "2 pax", "platform": "", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6pm", "updatedAt": 1791100000005, "username": "爱读书的汤猪猪"}, "k206": {"beef": "", "confirmed": false, "createdAt": 1791100000006, "date": "2026-10-08", "notes": "", "pax": "2-4pax", "platform": "", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6:30-7pm", "updatedAt": 1791100000006, "username": "是薯泥呀"}, "k207": {"beef": "", "confirmed": false, "createdAt": 1791100000007, "date": "2026-10-08", "notes": "", "pax": "3pax", "platform": "", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7:30pm", "updatedAt": 1791100000007, "username": "gracewyh"}, "k208": {"beef": "", "confirmed": false, "createdAt": 1791100000008, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "5pm", "updatedAt": 1791100000008, "username": "木有问题哇"}, "k209": {"beef": "", "confirmed": false, "createdAt": 1791100000009, "date": "2026-10-09", "notes": "", "pax": "3pax", "platform": "XHS", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "7pm", "updatedAt": 1791100000009, "username": "我是 GT"}, "k210": {"beef": "", "confirmed": false, "createdAt": 1791100000010, "date": "2026-10-11", "notes": "", "pax": "4 pax", "platform": "", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6pm", "updatedAt": 1791100000010, "username": "Darren"}, "k211": {"beef": "", "confirmed": false, "createdAt": 1791100000011, "date": "2026-10-12", "notes": "", "pax": "4 pax", "platform": "", "postLink": "", "profileLink": "", "status": "pending", "table": "", "time": "6:30pm", "updatedAt": 1791100000011, "username": "跟着阿jun吃喝玩乐"}, "k221": {"beef": "", "confirmed": true, "createdAt": 1791200000001, "date": "2026-10-07", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/jesslynwong_?stkn=MWt1OTJsMm53ZjNyZQ==", "status": "pending", "table": "", "time": "8pm", "updatedAt": 1791200000001, "username": "jesslynwong_"}, "k222": {"beef": "no", "confirmed": false, "createdAt": 1791200000002, "date": "2026-10-09", "notes": "", "pax": "4 pax", "platform": "Instagram", "postLink": "", "profileLink": "https://www.instagram.com/imclinx?stkn=anhhZzBpNml3N3My", "status": "pending", "table": "", "time": "11am", "updatedAt": 1791200000002, "username": "imclinx"}};
+  let store; try{ store=JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){ store=null; }
+  if(!store) store=SEED;
+  const listeners=[];
+  function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+  function emit(changes){ listeners.forEach(cb=>cb({docChanges:()=>changes})); }
+  let seq=0;
+  const db={ collection:()=>({
+    onSnapshot(cb){ listeners.push(cb); setTimeout(()=>cb({docChanges:()=>Object.entries(store).map(([id,d])=>({type:"added",doc:{id,data:()=>d}}))}),0); return ()=>{}; },
+    doc(id){ id=id||("n"+Date.now().toString(36)+(seq++)); return {
+      id,
+      async set(d){ store[id]=JSON.parse(JSON.stringify(d)); persist(); emit([{type:"modified",doc:{id,data:()=>store[id]}}]); },
+      async update(p){ store[id]=Object.assign({},store[id]||{},p); persist(); emit([{type:"modified",doc:{id,data:()=>store[id]}}]); },
+      async delete(){ delete store[id]; persist(); emit([{type:"removed",doc:{id,data:()=>({})}}]); }
+    }; }
+  })};
+  const downloads={ async save({filename,data}){ const b=new Blob([data],{type:"application/octet-stream"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1000); return {status:"saved"}; } };
+  window.claude={ use: async(n)=> n==="db"?db : n==="user"?{can:async()=>true} : n==="downloads"?downloads : null };
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+"use strict";
+const COLL = "kols";
+const FIELDS = ["date","time","username","platform","profileLink","pax","table","confirmed","beef","status","postLink","notes"];
+const docs = new Map();
+let db = null, readOnly = false, loaded = false;
+const ui = { day: "all", status: "all", plat: "", q: "" };
+const rows = new Map(), groups = new Map();
+let pendingRender = false, pendingFocusId = null, flashId = null;
+const queues = new Map();
+let inflight = 0;
+
+const $ = id => document.getElementById(id);
+const tbody = $("tbody");
+
+/* ---------- helpers ---------- */
+function isoOf(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function todayISO(){ return isoOf(new Date()); }
+function parseISO(s){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||""); return m? new Date(+m[1],+m[2]-1,+m[3]) : null; }
+const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MOL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function dayLabel(iso){ const d=parseISO(iso); return d? WD[d.getDay()]+" "+d.getDate()+" "+MO[d.getMonth()] : ""; }
+function timeMins(t){
+  const s=String(t||"").toLowerCase().replace(/\s+/g,"");
+  const m=/^(\d{1,4})(?:[.:](\d{2}))?/.exec(s); if(!m) return 9999;
+  let h, mi=0; const n=m[1];
+  if(n.length>2){ h=+n.slice(0,-2); mi=+n.slice(-2); } else { h=+n; if(m[2]) mi=+m[2]; }
+  const ap=(/(am|pm)/.exec(s)||[])[1];
+  if(ap==="pm" && h<12) h+=12; else if(ap==="am" && h===12) h=0; else if(!ap && h<9) h+=12;
+  return h*60+mi;
+}
+function platClass(p){ p=String(p||"").toLowerCase(); if(p.includes("xhs")||p.includes("xiao")||p.includes("red")) return "xhs"; if(p.includes("insta")||p==="ig") return "ig"; if(p.includes("tik")) return "tt"; return ""; }
+function safeHref(v){ v=String(v||"").trim(); if(!v) return ""; if(!/^https?:\/\//i.test(v)) v="https://"+v; try{ const u=new URL(v); return (u.protocol==="http:"||u.protocol==="https:")?u.href:""; }catch(e){ return ""; } }
+function sorted(list){ return list.sort((a,b)=> (a.date||"9").localeCompare(b.date||"9") || timeMins(a.time)-timeMins(b.time) || (a.createdAt||0)-(b.createdAt||0)); }
+
+/* ---------- save indicator & toast ---------- */
+function setSave(state, text){ const el=$("saveState"); el.className="save-state"+(state?" "+state:""); $("saveText").textContent=text; }
+let toastTimer=null;
+function toast(msg, actionLabel, actionFn){
+  $("toastMsg").textContent=msg; const b=$("toastBtn");
+  b.hidden=!actionFn; b.textContent=actionLabel||""; b.onclick=()=>{ hideToast(); actionFn&&actionFn(); };
+  $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(hideToast, actionFn?7000:2600);
+}
+function hideToast(){ $("toast").classList.remove("show"); }
+
+/* ---------- writes ---------- */
+function enqueue(id, fn){
+  const prev = queues.get(id) || Promise.resolve();
+  inflight++; setSave("busy","Saving…");
+  const p = prev.then(fn).then(()=>{ inflight--; if(!inflight) setSave("","All changes saved"); },
+    err=>{ inflight--; handleWriteErr(err); });
+  queues.set(id, p.catch(()=>{}));
+  return p;
+}
+function handleWriteErr(err){
+  const code = err && err.code;
+  if(code==="invalid_argument" && !readOnly){ setReadOnly(true); setSave("err","View only — changes can't be saved"); toast("You have view-only access to this checklist."); return; }
+  if(code==="quota_exceeded"){ setSave("err","Storage full"); toast("Storage is full — delete some old rows to add new ones."); return; }
+  setSave("err","Couldn't save — check your connection");
+  toast("A change didn't save. Try again in a moment.");
+}
+function saveField(id, field, value){
+  const cur = docs.get(id); if(!cur || cur[field]===value || readOnly) return;
+  const old = cur[field];
+  cur[field]=value;
+  updateDerived(id);
+  const patch={}; patch[field]=value; patch.updatedAt=Date.now();
+  enqueue(id, ()=>db.collection(COLL).doc(id).update(patch));
+  if(field==="date"){
+    flashId=id;
+    if(ui.day!=="all" && value!==ui.day){
+      toast((cur.username||"KOL")+" moved to "+dayLabel(value), "View", ()=>{ ui.day=value; flashId=id; render(); scrollToRow(id); });
+    } else toast("Moved to "+dayLabel(value));
+    render(); scrollToRow(id);
+    return;
+  }
+  if(field==="time") flashId=id;
+  if(field==="time"||field==="status"||field==="platform"||field==="postLink") scheduleRender();
+}
+function scrollToRow(id){ requestAnimationFrame(()=>{ const r=rows.get(id); if(r && r.isConnected) r.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"}); }); }
+
+/* ---------- calendar ---------- */
+const cal={ id:null, anchor:null, month:null };
+function openCal(id, anchor){
+  if(readOnly) return;
+  const d=docs.get(id); const cur=parseISO(d&&d.date) || new Date();
+  cal.id=id; cal.anchor=anchor; cal.month=new Date(cur.getFullYear(), cur.getMonth(), 1);
+  drawCal(); const el=$("cal"); el.classList.add("open"); $("scrim").classList.add("open");
+  if(!matchMedia("(max-width:760px)").matches){
+    const r=anchor.getBoundingClientRect(); const w=el.offsetWidth, h=el.offsetHeight;
+    let top=r.bottom+6; if(top+h>innerHeight-8) top=Math.max(8, r.top-h-6);
+    let left=Math.min(r.left, innerWidth-w-8); el.style.top=top+"px"; el.style.left=Math.max(8,left)+"px";
+  } else { el.style.top=""; el.style.left=""; }
+  const sel=el.querySelector("button.sel")||el.querySelector(".cal-g button"); sel&&sel.focus();
+}
+function closeCal(){ $("cal").classList.remove("open"); $("scrim").classList.remove("open"); const a=cal.anchor; cal.id=null; cal.anchor=null; if(a && a.isConnected) a.focus({preventScroll:true}); }
+function drawCal(){
+  const m=cal.month; $("calTitle").textContent=MOL[m.getMonth()]+" "+m.getFullYear();
+  const g=$("calGrid"); const kids=[];
+  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(w=>{ const s=document.createElement("div"); s.className="wdh"; s.textContent=w.slice(0,2); kids.push(s); });
+  const first=new Date(m.getFullYear(), m.getMonth(), 1); const offset=(first.getDay()+6)%7;
+  const start=new Date(first); start.setDate(1-offset);
+  const selISO=(docs.get(cal.id)||{}).date, t=todayISO();
+  const has=new Set([...docs.values()].map(d=>d.date));
+  const dim=new Date(m.getFullYear(), m.getMonth()+1, 0).getDate(); const cells=Math.ceil((offset+dim)/7)*7;
+  for(let i=0;i<cells;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i); const iso=isoOf(d);
+    const b=document.createElement("button"); b.type="button"; b.textContent=d.getDate();
+    b.setAttribute("aria-label", dayLabel(iso));
+    if(d.getMonth()!==m.getMonth()) b.classList.add("out"); if(iso===t) b.classList.add("today"); if(iso===selISO) b.classList.add("sel"); if(has.has(iso)) b.classList.add("has");
+    b.addEventListener("click",()=>{ const id=cal.id; closeCal(); saveField(id,"date",iso); });
+    kids.push(b);
+  }
+  g.replaceChildren(...kids);
+}
+$("calPrev").addEventListener("click",()=>{ cal.month=new Date(cal.month.getFullYear(), cal.month.getMonth()-1, 1); drawCal(); });
+$("calNext").addEventListener("click",()=>{ cal.month=new Date(cal.month.getFullYear(), cal.month.getMonth()+1, 1); drawCal(); });
+$("calClose").addEventListener("click", closeCal);
+$("scrim").addEventListener("click", closeCal);
+document.addEventListener("mousedown",e=>{ if(cal.id && !$("cal").contains(e.target) && !(cal.anchor&&cal.anchor.contains(e.target))) closeCal(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && cal.id) closeCal(); });
+addEventListener("resize",()=>{ if(cal.id) closeCal(); });
+
+/* ---------- row building ---------- */
+const ICON = {
+  copy:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>',
+  check:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+  open:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+  trash:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>',
+  cal:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>'
+};
+function mkInput(id, field, opts={}){
+  const i=document.createElement("input"); i.className="cell"+(opts.cls?" "+opts.cls:""); i.type=opts.type||"text";
+  i.dataset.f=field; if(opts.ph) i.placeholder=opts.ph; if(opts.list) i.setAttribute("list",opts.list);
+  i.setAttribute("aria-label", opts.label||field); i.spellcheck=false; i.autocomplete="off";
+  i.addEventListener("change",()=>saveField(id, field, i.value.trim()));
+  i.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); i.blur(); } if(e.key==="Escape"){ i.value=(docs.get(id)||{})[field]||""; i.blur(); } });
+  return i;
+}
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){ return navigator.clipboard.writeText(text).catch(()=>legacyCopy(text)); }
+  return Promise.resolve(legacyCopy(text));
+}
+function legacyCopy(text){
+  const t=document.createElement("textarea"); t.value=text; t.setAttribute("readonly",""); t.style.position="fixed"; t.style.opacity="0";
+  document.body.appendChild(t); t.select(); let ok=false; try{ ok=document.execCommand("copy"); }catch(e){} t.remove();
+  if(!ok) throw new Error("copy failed"); return ok;
+}
+function mkLinkCell(id, field, label){
+  const wrap=document.createElement("div"); wrap.className="linkcell"+(field==="postLink"?" postcell":"");
+  const inp=mkInput(id, field, {ph: field==="postLink"?"Paste post link":"Paste profile link", label});
+  const copy=document.createElement("button"); copy.type="button"; copy.className="ib"; copy.innerHTML=ICON.copy; copy.title="Copy link"; copy.setAttribute("aria-label","Copy "+label);
+  copy.addEventListener("click",()=>{
+    const v=inp.value.trim(); if(!v) return;
+    Promise.resolve().then(()=>copyText(v)).then(()=>{ copy.innerHTML=ICON.check; copy.classList.add("copied"); toast("Link copied"); setTimeout(()=>{copy.innerHTML=ICON.copy; copy.classList.remove("copied");},1400); })
+      .catch(()=>{ inp.focus(); inp.select(); toast("Press Ctrl/⌘+C to copy the selected link"); });
+  });
+  const open=document.createElement("a"); open.className="ib"; open.innerHTML=ICON.open; open.target="_blank"; open.rel="noopener noreferrer"; open.title="Open link"; open.setAttribute("aria-label","Open "+label);
+  wrap.append(inp, copy, open);
+  wrap._sync=()=>{ const h=safeHref(inp.value); if(h){ open.href=h; open.removeAttribute("aria-disabled"); copy.removeAttribute("aria-disabled"); } else { open.removeAttribute("href"); open.setAttribute("aria-disabled","true"); copy.setAttribute("aria-disabled","true"); }
+    if(field==="postLink") inp.classList.toggle("has", !!inp.value.trim()); };
+  inp.addEventListener("input", wrap._sync);
+  return wrap;
+}
+function mkSelect(id, field, options, cls, label){
+  const s=document.createElement("select"); s.className=cls; s.dataset.f=field; s.setAttribute("aria-label",label);
+  options.forEach(([v,t])=>{ const o=document.createElement("option"); o.value=v; o.textContent=t; s.appendChild(o); });
+  s.addEventListener("change",()=>{ if(field==="status") s.className=cls+" s-"+s.value; saveField(id, field, s.value); });
+  return s;
+}
+function buildRow(id){
+  const tr=document.createElement("tr"); tr.className="krow"; tr.dataset.id=id; const el={};
+  const td=(child, cls, label)=>{ const c=document.createElement("td"); c.className=cls; if(label) c.dataset.label=label; c.appendChild(child); tr.appendChild(c); return c; };
+  el.time=mkInput(id,"time",{cls:"timein",ph:"Time",label:"Time"}); td(el.time,"c-time s1","Time");
+  el.status=mkSelect(id,"status",[["pending","Pending"],["arrived","✓ Arrived"],["cancelled","Cancelled"]],"status","Came?"); td(el.status,"c-stat s2");
+  el.username=mkInput(id,"username",{cls:"uname",ph:"Username",label:"Username"}); td(el.username,"c-user s3","Username");
+  el.date=document.createElement("button"); el.date.type="button"; el.date.className="datebtn";
+  el.date.addEventListener("click",()=>openCal(id, el.date)); td(el.date,"c-date","Shoot date");
+  el.pax=mkInput(id,"pax",{ph:"Pax",label:"Pax"}); td(el.pax,"c-pax","Pax");
+  const pw=document.createElement("div"); pw.className="platwrap"; el.pdot=document.createElement("span"); el.pdot.className="pdot";
+  el.platform=mkInput(id,"platform",{ph:"Platform",list:"platList",label:"Platform"}); pw.append(el.pdot, el.platform); td(pw,"c-plat","Platform");
+  el.profileWrap=mkLinkCell(id,"profileLink","profile link"); el.profileLink=el.profileWrap.querySelector("input"); td(el.profileWrap,"c-prof","Profile link");
+  el.confirmed=document.createElement("input"); el.confirmed.type="checkbox"; el.confirmed.className="chk"; el.confirmed.setAttribute("aria-label","Confirmed");
+  el.confirmed.addEventListener("change",()=>saveField(id,"confirmed",el.confirmed.checked)); td(el.confirmed,"c-conf c-center","Confirmed");
+  el.table=mkInput(id,"table",{ph:"–",label:"Table number"}); td(el.table,"c-tabl","Table no.");
+  el.beef=mkSelect(id,"beef",[["","–"],["yes","Yes"],["no","No"]],"small","Takes beef?"); td(el.beef,"c-beef","Beef?");
+  el.postWrap=mkLinkCell(id,"postLink","posting link"); el.postLink=el.postWrap.querySelector("input"); td(el.postWrap,"c-post","Posting link");
+  el.notes=mkInput(id,"notes",{ph:"Notes",label:"Notes"}); td(el.notes,"c-note","Notes");
+  const del=document.createElement("button"); del.type="button"; del.className="ib del"; del.innerHTML=ICON.trash; del.title="Delete row"; del.setAttribute("aria-label","Delete row");
+  let armT=null;
+  del.addEventListener("click",()=>{
+    if(!del.classList.contains("confirm")){ del.classList.add("confirm"); del.textContent="Delete?"; clearTimeout(armT);
+      armT=setTimeout(()=>{ del.classList.remove("confirm"); del.innerHTML=ICON.trash; },3000); return; }
+    clearTimeout(armT); deleteRow(id);
+  });
+  el.del=del; td(del,"c-del");
+  const sb=document.createElement("button"); sb.type="button"; sb.className="sumbtn"; sb.setAttribute("aria-expanded","false");
+  sb.innerHTML='<span class="sm"><span class="l1"><span class="st"></span><span class="sn"></span></span><span class="l2"></span></span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  sb.addEventListener("click",()=>toggleCard(id));
+  const sc=document.createElement("td"); sc.className="c-sum"; sc.appendChild(sb); tr.insertBefore(sc, tr.firstChild);
+  el.sum=sb;
+  tr._el=el; return tr;
+}
+function setVal(node, v){ if(node!==document.activeElement && node.value!==v) node.value=v; }
+function fillRow(tr, d){
+  const el=tr._el;
+  ["username","time","pax","platform","profileLink","table","postLink","notes"].forEach(f=>setVal(el[f], d[f]||""));
+  setVal(el.status, d.status||"pending"); el.status.className="status s-"+(d.status||"pending");
+  setVal(el.beef, d.beef||"");
+  if(el.confirmed!==document.activeElement) el.confirmed.checked=!!d.confirmed;
+  const lbl=dayLabel(d.date);
+  el.date.innerHTML=ICON.cal; el.date.appendChild(document.createTextNode(lbl||"Set date")); el.date.classList.toggle("empty",!lbl);
+  el.date.setAttribute("aria-label","Shoot date: "+(lbl||"not set")+". Change date");
+  el.profileWrap._sync(); el.postWrap._sync();
+  el.pdot.className="pdot "+platClass(d.platform);
+  tr.classList.toggle("is-cancelled", d.status==="cancelled");
+  fillSummary(el, d);
+  [el.username,el.date,el.time,el.pax,el.platform,el.profileLink,el.table,el.postLink,el.notes,el.status,el.beef,el.confirmed,el.del].forEach(n=>n.disabled=readOnly);
+}
+function fillSummary(el, d){
+  const sb=el.sum; sb.querySelector(".st").textContent=d.time||"–"; sb.querySelector(".sn").textContent=d.username||"New KOL";
+  const l2=sb.querySelector(".l2"); const parts=[];
+  const mk=(txt,cls)=>{ const s=document.createElement("span"); s.className="tag"+(cls?" "+cls:""); s.textContent=txt; return s; };
+  parts.push(d.beef==="yes"?mk("Beef ✓","ok"):d.beef==="no"?mk("No beef"):mk("Beef?","warn"));
+  if((d.postLink||"").trim()) parts.push(mk("Posted ✓","ok")); else if(d.status==="arrived") parts.push(mk("Not posted","warn"));
+  if(d.pax) parts.push(mk(d.pax));
+  const p=mk(d.platform||"No platform"); const dot=document.createElement("span"); dot.className="pdot "+platClass(d.platform); p.prepend(dot); parts.push(p);
+  l2.replaceChildren(...parts);
+  sb.setAttribute("aria-label",(d.time||"")+" "+(d.username||"New KOL")+", show details");
+}
+let openId=null;
+function toggleCard(id, force){
+  const want = force!==undefined ? force : openId!==id;
+  if(openId && openId!==id){ const o=rows.get(openId); if(o){ o.classList.remove("open"); o._el.sum.setAttribute("aria-expanded","false"); } }
+  const r=rows.get(id); if(!r) return;
+  r.classList.toggle("open", want); r._el.sum.setAttribute("aria-expanded", String(want));
+  openId = want ? id : null;
+  if(want) requestAnimationFrame(()=>{ const rect=r.getBoundingClientRect(); if(rect.top<0 || rect.top>innerHeight*0.6) r.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"}); });
+}
+function updateDerived(id){ const tr=rows.get(id), d=docs.get(id); if(tr&&d){ fillSummary(tr._el,d); tr._el.pdot.className="pdot "+platClass(d.platform); tr.classList.toggle("is-cancelled", d.status==="cancelled"); } renderSummary(); }
+function groupRow(date, n){
+  let g=groups.get(date);
+  if(!g){ g=document.createElement("tr"); g.className="group"; const td=document.createElement("td"); td.colSpan=14;
+    const w=document.createElement("span"); w.className="gwrap"; const a=document.createElement("span"); a.className="gd"; const b=document.createElement("span"); b.className="gc";
+    w.append(a,b); td.appendChild(w); g.appendChild(td); g._a=a; g._b=b; groups.set(date,g); }
+  g._a.textContent = date ? dayLabel(date) : "No date"; g._b.textContent = n+" KOL"+(n===1?"":"s");
+  return g;
+}
+
+/* ---------- filtering & rendering ---------- */
+function matches(d){
+  if(ui.day!=="all" && d.date!==ui.day) return false;
+  if(ui.plat && (d.platform||"").toLowerCase()!==ui.plat) return false;
+  const st=d.status||"pending", posted=!!(d.postLink||"").trim();
+  if(ui.status==="pending" && st!=="pending") return false;
+  if(ui.status==="arrived" && st!=="arrived") return false;
+  if(ui.status==="cancelled" && st!=="cancelled") return false;
+  if(ui.status==="awaiting" && !(st==="arrived" && !posted)) return false;
+  if(ui.status==="posted" && !posted) return false;
+  if(ui.q){ const hay=[d.username,d.notes,d.table,d.platform,d.pax,d.time].join(" ").toLowerCase(); if(!hay.includes(ui.q)) return false; }
+  return true;
+}
+let renderQueued=false;
+function scheduleRender(){ if(renderQueued) return; renderQueued=true; requestAnimationFrame(()=>{ renderQueued=false; render(); }); }
+function render(){
+  renderSummary();
+  const active=document.activeElement;
+  const editing = active && tbody.contains(active) && (active.tagName==="INPUT" || active.tagName==="SELECT");
+  const list=sorted([...docs.entries()].map(([id,d])=>Object.assign({id},d)).filter(matches));
+  list.forEach(d=>{ let tr=rows.get(d.id); if(!tr){ tr=buildRow(d.id); rows.set(d.id,tr); } fillRow(tr,d); });
+  for(const [id,tr] of rows){ if(!docs.has(id)){ if(tr.contains(active)) continue; tr.remove(); rows.delete(id); } }
+  if(editing){ pendingRender=true; return; }
+  const want=[];
+  if(ui.day==="all"){
+    const per=new Map(); list.forEach(d=>per.set(d.date||"", (per.get(d.date||"")||0)+1));
+    let last=null; list.forEach(d=>{ const k=d.date||""; if(k!==last){ want.push(groupRow(k, per.get(k))); last=k; } want.push(rows.get(d.id)); });
+  } else list.forEach(d=>want.push(rows.get(d.id)));
+  const cur=[...tbody.children];
+  if(want.length!==cur.length || want.some((r,i)=>r!==cur[i])){ const frag=document.createDocumentFragment(); want.forEach(r=>frag.appendChild(r)); tbody.replaceChildren(frag); }
+  const empty=$("empty");
+  if(!list.length){ empty.hidden=false;
+    empty.innerHTML = docs.size ? "<b>No KOLs match these filters</b>Clear the search or pick another day or status." : "<b>No KOLs yet</b>Use Add KOL to start this week's list.";
+  } else empty.hidden=true;
+  if(flashId){ const r=rows.get(flashId); flashId=null; if(r && r.isConnected){ r.classList.remove("flash"); void r.offsetWidth; r.classList.add("flash"); setTimeout(()=>r.classList.remove("flash"),1500); } }
+  if(pendingFocusId && rows.get(pendingFocusId)){ const r=rows.get(pendingFocusId); pendingFocusId=null; toggleCard(r.dataset.id,true); r.scrollIntoView({block:"center"}); r._el.time.focus(); }
+}
+tbody.addEventListener("focusout",()=>{ setTimeout(()=>{ const a=document.activeElement; if(pendingRender && !(a && tbody.contains(a) && (a.tagName==="INPUT"||a.tagName==="SELECT"))){ pendingRender=false; render(); } },0); });
+
+function counts(list){ const c={total:list.length,arrived:0,pending:0,cancelled:0,posted:0,pax:0,beefYes:0,beefNo:0,beefUnset:0};
+  list.forEach(d=>{ c[d.status||"pending"]=(c[d.status||"pending"]||0)+1; if((d.postLink||"").trim()) c.posted++; if(d.status!=="cancelled"){ const n=parseInt(String(d.pax||"").match(/\d+/)||0,10); if(n) c.pax+=n;
+    if(d.beef==="yes") c.beefYes++; else if(d.beef==="no") c.beefNo++; else c.beefUnset++; } }); return c; }
+function renderSummary(){
+  const all=[...docs.values()];
+  const dates=[...new Set(all.map(d=>d.date).filter(Boolean))].sort();
+  if(ui.day!=="all" && !dates.includes(ui.day)) dates.push(ui.day), dates.sort();
+  const strip=$("days"); const today=todayISO();
+  const items=[["all", null]].concat(dates.map(d=>[d, parseISO(d)]));
+  const keepStripX=strip.scrollLeft;
+  strip.replaceChildren(...items.map(([key,dt])=>{
+    const sub = key==="all" ? all : all.filter(x=>x.date===key); const c=counts(sub);
+    const b=document.createElement("button"); b.type="button"; b.className="day"+(key===today?" today":""); b.setAttribute("aria-pressed", String(ui.day===key));
+    const wd=document.createElement("div"); wd.className="wd"; wd.textContent = key==="all" ? "Whole list" : (dt? WD[dt.getDay()] : "No date");
+    const dtx=document.createElement("div"); dtx.className="dt"; dtx.textContent = key==="all" ? (dates.length? rangeLabel(dates):"All") : (dt? dt.getDate()+" "+MO[dt.getMonth()] : key);
+    const ct=document.createElement("div"); ct.className="ct"; ct.textContent = c.total+" KOL"+(c.total===1?"":"s")+(c.arrived?" · "+c.arrived+" came":"");
+    const bar=document.createElement("div"); bar.className="bar";
+    if(c.total){ [["a",c.arrived],["p",c.pending],["c",c.cancelled]].forEach(([k,n])=>{ if(n){ const s=document.createElement("span"); s.className=k; s.style.width=(n/c.total*100)+"%"; bar.appendChild(s);} }); }
+    b.append(wd,dtx,ct,bar);
+    b.addEventListener("click",()=>{ ui.day=key; render(); });
+    return b;
+  }));
+  strip.scrollLeft=keepStripX;
+  if(loaded && !strip._scrolled){
+    // On open: put today's tile (or the next upcoming shoot day) at the left edge of the strip
+    const tiles=[...strip.children]; const idx=dates.findIndex(d=>d>=today);
+    const target = strip.querySelector(".day.today") || (idx>=0 ? tiles[idx+1] : null);
+    if(target){ strip._scrolled=true; requestAnimationFrame(()=>{ strip.scrollLeft += target.getBoundingClientRect().left - strip.getBoundingClientRect().left - 2; }); }
+  }
+  const scope = ui.day==="all" ? all : all.filter(x=>x.date===ui.day); const c=counts(scope);
+  const awaiting = scope.filter(d=>d.status==="arrived" && !(d.postLink||"").trim()).length;
+  const stat=(n,label,cls)=>{ const s=document.createElement("div"); s.className="stat"+(cls?" "+cls:""); const b=document.createElement("b"); b.textContent=n; const sp=document.createElement("span"); sp.textContent=label; s.append(b,sp); return s; };
+  $("stats").replaceChildren(stat(c.total,"booked"), stat(c.arrived,"arrived","g"), stat(c.pending,"pending","y"), stat(c.cancelled,"cancelled","r"), stat(c.posted,"posted"), stat(awaiting,"came but not posted yet"), stat(c.pax,"pax expected"));
+  const bn=document.createElement("span"); bn.className="beefnote"; bn.textContent=(ui.day==="all"?"Beef · whole list":"Beef · "+dayLabel(ui.day))+" (excl. cancelled)";
+  renderDock(all, dates, today);
+  $("beefStats").replaceChildren(bn, stat(c.beefYes,"take beef","g"), stat(c.beefNo,"no beef","r"), stat(c.beefUnset,"not asked yet","y"));
+  const seen=new Map(); all.map(d=>(d.platform||"").trim()).filter(Boolean).forEach(p=>{ const k=p.toLowerCase(); if(!seen.has(k)) seen.set(k,p); });
+  const pf=$("platFilter"); const curVal=pf.value;
+  const opts=[["","All platforms"]].concat([...seen.entries()].sort((a,b)=>a[1].localeCompare(b[1])));
+  if(pf.options.length!==opts.length || opts.some(([v],i)=>pf.options[i].value!==v)){
+    pf.replaceChildren(...opts.map(([v,t])=>{ const o=document.createElement("option"); o.value=v; o.textContent=t; return o; })); pf.value=curVal;
+  }
+}
+function renderDock(all, dates, today){
+  const box=$("dockDays"); if(!box) return;
+  const items=[["all",null]].concat(dates.map(d=>[d,parseISO(d)]));
+  const keepX=box.scrollLeft;
+  box.replaceChildren(...items.map(([key,dt])=>{
+    const n = key==="all" ? all.length : all.filter(x=>x.date===key).length;
+    const b=document.createElement("button"); b.type="button"; b.className="dchip"+(key===today?" today":""); b.setAttribute("aria-pressed",String(ui.day===key)); b.dataset.k=key;
+    const w=document.createElement("span"); w.className="w"; w.textContent = key==="all" ? "Whole" : WD[dt.getDay()];
+    const d=document.createElement("span"); d.className="d"; d.textContent = key==="all" ? "List" : dt.getDate()+" "+MO[dt.getMonth()];
+    const c=document.createElement("span"); c.className="n"; c.textContent = n+" KOL"+(n===1?"":"s");
+    b.append(w,d,c);
+    b.addEventListener("click",()=>{ ui.day=key; render(); window.scrollTo({top:0}); });
+    return b;
+  }));
+  box.scrollLeft=keepX;
+  if(loaded && !box._scrolled){
+    const idx=dates.findIndex(d=>d>=today); const target=box.querySelector(".dchip.today") || (idx>=0 ? box.children[idx+1] : null);
+    if(target){ box._scrolled=true; requestAnimationFrame(()=>{ box.scrollLeft += target.getBoundingClientRect().left - box.getBoundingClientRect().left - 12; }); }
+  } else if(box._scrolled){
+    const sel=box.querySelector('[aria-pressed="true"]'); if(sel){ const r=sel.getBoundingClientRect(), br=box.getBoundingClientRect(); if(r.left<br.left || r.right>br.right) box.scrollLeft += r.left - br.left - 12; }
+  }
+  const scope = ui.day==="all" ? all : all.filter(x=>x.date===ui.day); const c=counts(scope);
+  const awaiting = scope.filter(d=>d.status==="arrived" && !(d.postLink||"").trim()).length;
+  const cell=(k,v,cls)=>{ const a=document.createElement("span"); a.className="k"; a.textContent=k; const b=document.createElement("span"); b.className="v"+(cls?" "+cls:""); b.textContent=v; const wrap=document.createElement("div"); wrap.append(a,b); return wrap; };
+  const full=document.createElement("div"); full.className="full";
+  const t=document.createElement("span"); t.textContent=(ui.day==="all"?"Whole list":dayLabel(ui.day))+" · Beef "; const by=document.createElement("b"); by.textContent=c.beefYes+" yes"; const bn=document.createElement("span"); bn.textContent=" / "+c.beefNo+" no / "+c.beefUnset+" not asked";
+  full.append(t,by,bn);
+  $("dockSum").replaceChildren(cell("BOOKED",c.total), cell("ARRIVED",c.arrived,"g"), cell("PENDING",c.pending,"y"), cell("NO POST",awaiting), full);
+  syncDockHeight();
+}
+function syncDockHeight(){ const d=$("dock"); if(d && d.offsetHeight) document.documentElement.style.setProperty("--dock-h", d.offsetHeight+"px"); }
+function rangeLabel(dates){ const a=parseISO(dates[0]), b=parseISO(dates[dates.length-1]); if(!a||!b) return "All";
+  if(dates.length===1) return a.getDate()+" "+MO[a.getMonth()];
+  return a.getMonth()===b.getMonth() ? a.getDate()+"–"+b.getDate()+" "+MO[b.getMonth()] : a.getDate()+" "+MO[a.getMonth()]+" – "+b.getDate()+" "+MO[b.getMonth()]; }
+
+const CHIPS=[["all","All"],["pending","Pending"],["arrived","Arrived"],["cancelled","Cancelled"],["awaiting","Came, no post yet"],["posted","Posted"]];
+$("statusChips").replaceChildren(...CHIPS.map(([k,t])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=t; b.dataset.k=k; b.setAttribute("aria-pressed",String(ui.status===k));
+  b.addEventListener("click",()=>{ ui.status=k; [...$("statusChips").children].forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.k===k))); render(); }); return b; }));
+let qT=null; $("q").addEventListener("input",e=>{ clearTimeout(qT); qT=setTimeout(()=>{ ui.q=e.target.value.trim().toLowerCase(); render(); },120); });
+$("platFilter").addEventListener("change",e=>{ ui.plat=e.target.value; render(); });
+
+/* ---------- add / delete ---------- */
+function addRow(){
+  if(!db || readOnly) return;
+  const ref=db.collection(COLL).doc(); const id=ref.id;
+  const data={date: ui.day!=="all"?ui.day:todayISO(), time:"", username:"", platform:"", profileLink:"", pax:"", table:"", confirmed:false, beef:"", status:"pending", postLink:"", notes:"", createdAt:Date.now(), updatedAt:Date.now()};
+  docs.set(id, data);
+  ui.status="all"; ui.q=""; ui.plat=""; $("q").value=""; $("platFilter").value="";
+  [...$("statusChips").children].forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.k==="all")));
+  pendingFocusId=id; render();
+  enqueue(id, ()=>ref.set(data));
+}
+function deleteRow(id){
+  const d=docs.get(id); if(!d||readOnly) return; const copy=Object.assign({},d);
+  docs.delete(id); render();
+  enqueue(id, ()=>db.collection(COLL).doc(id).delete());
+  toast("Deleted "+(copy.username||"row"), "Undo", ()=>{ docs.set(id, copy); render(); enqueue(id, ()=>db.collection(COLL).doc(id).set(copy)); });
+}
+$("addBtn").addEventListener("click", addRow);
+$("dockAdd").addEventListener("click", addRow);
+(function(){ let min=false; try{ min=localStorage.getItem("kolDockMin")==="1"; }catch(e){}
+  const d=$("dock"), t=$("dockToggle");
+  const apply=()=>{ d.classList.toggle("min",min); t.setAttribute("aria-expanded",String(!min)); t.setAttribute("aria-label", min?"Show day summary":"Hide day summary"); requestAnimationFrame(syncDockHeight); };
+  t.addEventListener("click",()=>{ min=!min; try{ localStorage.setItem("kolDockMin",min?"1":"0"); }catch(e){} apply(); });
+  apply(); addEventListener("resize", syncDockHeight); })();
+
+/* ---------- export (Excel, one sheet per day) ---------- */
+function ordinal(n){ const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
+function sheetName(iso, used){
+  const dt=parseISO(iso); let base = dt ? ordinal(dt.getDate())+" "+MO[dt.getMonth()]+" "+WD[dt.getDay()].toUpperCase() : (iso||"No date");
+  base=base.replace(/[\[\]:*?\/\\]/g,"-").slice(0,28); let name=base, i=2; while(used.has(name)) name=base+" "+(i++); used.add(name); return name;
+}
+function buildWorkbook(X){
+  const all=sorted([...docs.values()].map(d=>Object.assign({},d)));
+  const head=["Time","Come?","Username","Platform","Pax","Table No.","Confirm","Take Beef?","Profile link","Posting Link","Notes"];
+  const byDate=new Map(); all.forEach(d=>{ const k=d.date||""; if(!byDate.has(k)) byDate.set(k,[]); byDate.get(k).push(d); });
+  const dates=[...byDate.keys()].sort((a,b)=>(a||"9").localeCompare(b||"9"));
+  const wb=X.utils.book_new(), used=new Set(), totals=[];
+  dates.forEach(date=>{
+    const list=byDate.get(date);
+    const aoa=[head].concat(list.map(d=>[
+      d.time||"", d.status==="arrived"?"✅":d.status==="cancelled"?"Cancelled":"", d.username||"", d.platform||"", d.pax||"", d.table||"",
+      d.confirmed?"√":"", d.beef==="yes"?"√":d.beef==="no"?"❌":"", d.profileLink||"", d.postLink||"", d.notes||""]));
+    const ws=X.utils.aoa_to_sheet(aoa);
+    list.forEach((d,i)=>{ [[8,d.profileLink],[9,d.postLink]].forEach(([c,v])=>{ const h=safeHref(v); if(h){ const ref=X.utils.encode_cell({r:i+1,c}); if(ws[ref]) ws[ref].l={Target:h}; } }); });
+    ws["!cols"]=[{wch:9},{wch:11},{wch:24},{wch:11},{wch:12},{wch:9},{wch:8},{wch:10},{wch:40},{wch:40},{wch:24}];
+    ws["!autofilter"]={ref:X.utils.encode_range({s:{r:0,c:0},e:{r:Math.max(aoa.length-1,0),c:head.length-1}})};
+    X.utils.book_append_sheet(wb, ws, sheetName(date, used));
+    const c=counts(list); const dt=parseISO(date);
+    totals.push([dt? dt.getDate()+" "+MO[dt.getMonth()] : (date||"No date"), c.total, c.arrived||0, c.pending||0, c.cancelled||0, c.posted, c.pax, c.beefYes, c.beefNo, c.beefUnset]);
+  });
+  const sum=["Total",0,0,0,0,0,0,0,0,0]; totals.forEach(r=>{ for(let i=1;i<10;i++) sum[i]+=r[i]; });
+  const tws=X.utils.aoa_to_sheet([["Date","KOLs booked","Arrived","Pending","Cancelled","Posted","Pax expected","Take beef","No beef","Beef not asked"]].concat(totals,[sum],[[],["Beef counts exclude cancelled KOLs"]]));
+  tws["!cols"]=[{wch:12},{wch:12},{wch:9},{wch:9},{wch:10},{wch:8},{wch:13},{wch:10},{wch:9},{wch:14}];
+  X.utils.book_append_sheet(wb, tws, "TOTAL");
+  return {wb, rows:all.length, days:dates.length};
+}
+async function setupExport(){
+  let dl=null; try{ dl=await window.claude.use("downloads"); }catch(e){}
+  if(!dl || !window.XLSX) return; const b=$("exportBtn"); b.hidden=false;
+  b.addEventListener("click", async()=>{
+    if(!docs.size){ toast("Nothing to export yet."); return; }
+    const {wb, rows:n, days}=buildWorkbook(window.XLSX);
+    const buf=window.XLSX.write(wb,{bookType:"xlsx",type:"array"});
+    const dates=[...new Set([...docs.values()].map(d=>d.date).filter(Boolean))].sort();
+    const name="Penang KOL ("+(dates.length? rangeLabel(dates):"all")+").xlsx";
+    try{ await dl.save({filename:name, data:new Uint8Array(buf)}); toast("Exported "+n+" KOLs across "+days+" day sheets"); }
+    catch(e){ if(e && e.code!=="declined") toast("Export isn't available here."); }
+  });
+}
+
+function setReadOnly(v){ readOnly=v; $("addBtn").disabled=v||!db; $("dockAdd").disabled=v||!db; for(const tr of rows.values()){ const d=docs.get(tr.dataset.id); if(d) fillRow(tr,d); } }
+
+/* ---------- boot ---------- */
+render();
+(async function boot(){
+  if(!window.claude || !window.claude.use){ setSave("err","Offline copy"); showNotice("Open this checklist from its claude.ai link to load and save KOLs."); return; }
+  try{ db=await window.claude.use("db"); }catch(e){ db=null; }
+  if(!db){ setSave("err","Not connected"); showNotice("The checklist couldn't connect. Sign in to claude.ai and reopen this page."); return; }
+  try{ const u=await window.claude.use("user"); if(u){ const w=await u.can("data.write"); if(w===false){ setReadOnly(true); setSave("","View only"); } } }catch(e){}
+  $("addBtn").disabled=readOnly; $("dockAdd").disabled=readOnly;
+  setupExport();
+  db.collection(COLL).onSnapshot(snap=>{
+    snap.docChanges().forEach(ch=>{
+      const id=ch.doc.id;
+      if(ch.type==="removed"){ docs.delete(id); return; }
+      const incoming=ch.doc.data(); const out={}; FIELDS.forEach(f=>out[f]=incoming[f]); out.createdAt=incoming.createdAt; out.updatedAt=incoming.updatedAt;
+      docs.set(id,out);
+    });
+    if(!loaded){ loaded=true; if(!readOnly) setSave("","All changes saved");
+      const t=todayISO(); if([...docs.values()].some(d=>d.date===t)) ui.day=t; }
+    scheduleRender();
+  }, err=>{ setSave("err","Disconnected — reload the page"); });
+})();
+function showNotice(t){ const n=$("notice"); n.textContent=t; n.classList.add("show"); }
+})();
+</script>
+</body>
+</html>
